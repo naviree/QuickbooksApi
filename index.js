@@ -1,51 +1,63 @@
 require("dotenv").config();
 const express = require("express");
-const Oauthclient = require("intuit-oauth");
+const OAuthClient = require("intuit-oauth");
 
+// Initialize an Express application
 const app = express();
-const port = 3000;
+const port = 3001;
 
-const oauthClient = new Oauthclient({
-	clientId: process.env.CLIENT_ID,
-	clientSecret: process.env.CLIENT_SECRET,
-	environment: process.env.ENVIRONMENT,
-	redirectUri: process.env.REDIRECT_URI,
+// Configure the OAuthClient with credentials and environment
+const oauthClient = new OAuthClient({
+	clientId: process.env.CLIENT_ID, // QuickBooks OAuth2 Client ID
+	clientSecret: process.env.CLIENT_SECRET, // QuickBooks OAuth2 Client Secret
+	environment: process.env.ENVIRONMENT, // 'sandbox' or 'production'
+	redirectUri: process.env.REDIRECT_URL, // Redirect URI for OAuth callbacks
 });
 
+// Route to initiate the OAuth flow
 app.get("/auth", (req, res) => {
+	// Generate the authorization URL for QuickBooks
 	const authUri = oauthClient.authorizeUri({
-		scope: [Oauthclient.scopes.Accounting],
-		state: "Init",
+		scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.OpenId],
+		state: "Init", // State to protect against CSRF attacks
 	});
+	// Redirect user to the QuickBooks authorization page
 	res.redirect(authUri);
 });
 
+// Callback route for handling the response from QuickBooks
 app.get("/callback", async (req, res) => {
 	const parseRedirect = req.url;
+
 	try {
+		// Create an OAuth token using the callback URL
 		const authResponse = await oauthClient.createToken(parseRedirect);
-		res.redirect("/customer");
+		// Redirect to the payments route after successful authentication
+		res.redirect("/customers");
 	} catch (e) {
 		console.error("Error", e);
 	}
 });
 
-app.get("/customer", async (req, res) => {
+// Route to fetch payments data from QuickBooks
+app.get("/customers", async (req, res) => {
 	try {
+		// Make an API call to QuickBooks to fetch payments
 		const response = await oauthClient.makeApiCall({
-			url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341453554481946/query?query=select * from Customer &minorversion=73
-`,
+			url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341453638773894/query?query=select * from Customer&minorversion=73`,
 			method: "GET",
-			header: {
+			headers: {
 				"Content-Type": "application/json",
 			},
 		});
+		// Send the fetched data as JSON response
 		res.json(JSON.parse(response.body));
 	} catch (e) {
 		console.error(e);
 	}
 });
 
+// Start the Express server
 app.listen(port, () => {
 	console.log(`Server started on port: ${port}`);
 });
