@@ -6,8 +6,8 @@ const app = express();
 const port = 3000;
 
 const oauthClient = new Oauthclient({
-	clientID: process.env.CLIENT_ID,
-	clientsecret: process.env.CLIENT_SECRET,
+	clientId: process.env.CLIENT_ID,
+	clientSecret: process.env.CLIENT_SECRET,
 	environment: process.env.ENVIRONMENT,
 	redirectUri: process.env.REDIRECT_URI,
 });
@@ -21,9 +21,9 @@ app.get("/auth", (req, res) => {
 });
 
 app.get("/callback", async (req, res) => {
-	const parsedRedirect = req.url;
+	const parseRedirect = req.url;
 	try {
-		const authResponse = await oauthClient.createToken(parsedRedirect);
+		const authResponse = await oauthClient.createToken(parseRedirect);
 		res.redirect("/customer");
 	} catch (e) {
 		console.error("Error", e);
@@ -33,10 +33,11 @@ app.get("/callback", async (req, res) => {
 app.get("/customer", async (req, res) => {
 	try {
 		const response = await oauthClient.makeApiCall({
-			url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341453554481946/query?=queryselect * from customer&minorversion=73`,
+			url: `https://sandbox-quickbooks.api.intuit.com/v3/company/9341453554481946/query?query=select * from Customer &minorversion=73
+`,
 			method: "GET",
 			header: {
-				"Content-Type": "applications/json",
+				"Content-Type": "application/json",
 			},
 		});
 		res.json(JSON.parse(response.body));
