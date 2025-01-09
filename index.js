@@ -1,8 +1,6 @@
 const QuickBooks = require("node-quickbooks");
 const Server = require("./server.js");
 
-let accessToken = Server.refreshToken();
-
 let qbo = new QuickBooks(
 	"ABPsAQVR4ZAW8eK0lJ1YHVeSf4zTunjo3MHFqlEExoh5qfho81", // consumerKey
 	"uL37oMDdZ4b1tAMRygRXFeendHucbpXt6l9Q5Oo3", // consumerSecret
@@ -26,4 +24,4 @@ qbo.findCustomers(
 	}
 );
 
-console.log(Server.fetchToken());
+Server.fetchToken();
