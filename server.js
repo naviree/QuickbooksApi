@@ -23,9 +23,10 @@ let oauthClient = null;
 dotenv.config();
 
 const PORT = 3000;
-
-function helloWorld() {
-	console.log("Hello world");
+if (require.main === module) {
+	const server = app.listen(PORT, () => {
+		console.log(`💻 Server listening on port ${server.address().port}`);
+	});
 }
 
 // function oAuth() {
@@ -88,9 +89,6 @@ app.get("/refreshAccessToken", function (req, res) {
 	oauthClient
 		.refresh()
 		.then(function (authResponse) {
-			console.log(
-				`\n The Refresh Token is  ${JSON.stringify(authResponse.json)}`
-			);
 			oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
 			res.send(oauth2_token_json);
 		})
@@ -115,22 +113,23 @@ app.get("/refreshAccessToken", function (req, res) {
 //       });
 //   });
 // }
-
-function fetchToken() {
-	fetch("/refreshAccessToken")
-		.then((response) => response.json())
-		.then((data) => {
-			console.log(data);
-		})
-		.catch((error) => {
-			console.error(`Error: ${error.message}`);
-		});
+async function fetchToken() {
+	try {
+		const response = await fetch(
+			"http://localhost:3000/refreshAccessToken"
+		);
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Fetch error:", error);
+		throw error; // Re-throw the error to handle it in the caller
+	}
 }
 
-module.exports = {
-	helloWorld,
-	fetchToken,
-};
+module.exports = { fetchToken };
 
 // app.get("/callback", async (req, res) => {
 //   try {
@@ -175,6 +174,3 @@ module.exports = {
 // app.listen(PORT, () => {
 //   console.log(`Server running on http://localhost:${PORT}`);
 // });
-const server = app.listen(PORT || 3000, () => {
-	console.log(`💻 Server listening on port ${server.address().port}`);
-});
