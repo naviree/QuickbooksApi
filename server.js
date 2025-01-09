@@ -1,58 +1,181 @@
-import express from "express";
-import OAuthClient from "intuit-oauth";
+const express = require("express");
 
 const app = express();
+const path = require("path");
+const OAuthClient = require("intuit-oauth");
+const bodyParser = require("body-parser");
+const dotenv = require("dotenv");
+
+app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, "/public")));
+app.engine("html", require("ejs").renderFile);
+
+app.set("view engine", "html");
+app.use(bodyParser.json());
+
+const urlencodedParser = bodyParser.urlencoded({ extended: false });
+
+let oauth2_token_json = null;
+let redirectUri = "";
+
+let oauthClient = null;
+
+dotenv.config();
+
 const PORT = 3000;
 
-// Replace with your QuickBooks app details
-const CLIENT_ID = "ABPsAQVR4ZAW8eK0lJ1YHVeSf4zTunjo3MHFqlEExoh5qfho81";
-const CLIENT_SECRET = "uL37oMDdZ4b1tAMRygRXFeendHucbpXt6l9Q5Oo3";
-const REDIRECT_URI = "http://localhost:3000/callback";
+function helloWorld() {
+  console.log("Hello world");
+}
 
-// Initialize OAuth Client
-const oauthClient = new OAuthClient({
-	clientId: CLIENT_ID,
-	clientSecret: CLIENT_SECRET,
-	environment: "sandbox",
-	redirectUri: REDIRECT_URI,
+// function oAuth() {
+//   let oauthClient = new OAuthClient({
+//     clientId:
+//     clientSecret: process.env.CLIENT_SECRET,
+//     environment: "sandbox",
+//     redirectUri: `http://localhost:${PORT}/callback`,
+//   });
+// }
+// let oauthClient = new OAuthClient({
+//   clientId: process.env.CLIENT_ID,
+//   clientSecret: process.env.CLIENT_SECRET,
+//   environment: "sandbox",
+//   redirectUri: `http://localhost:${PORT}/callback`,
+// });
+
+app.get("/", (req, res) => {
+  res.render("index");
 });
 
-// Route to start OAuth flow and redirect to QuickBooks login
-app.get("/auth", (req, res) => {
-	const authUri = oauthClient.authorizeUri({
-		scope: [OAuthClient.scopes.Accounting, OAuthClient.scopes.OpenId],
-		state: "randomstate", // Use a random state value for security
-	});
+app.get("/authUri", urlencodedParser, function (req, res) {
+  oauthClient = new OAuthClient({
+    clientId: req.query.json.clientId,
+    clientSecret: req.query.json.clientSecret,
+    environment: req.query.json.environment,
+    redirectUri: req.query.json.redirectUri,
+  });
 
-	res.redirect(authUri); // Redirect user to QuickBooks login page
+  const authUri = oauthClient.authorizeUri({
+    scope: [
+      OAuthClient.scopes.Accounting,
+      OAuthClient.scopes.OpenId,
+      OAuthClient.scopes.Profile,
+      OAuthClient.scopes.Email,
+    ],
+    state: "intuit-test",
+  });
+  res.send(authUri);
 });
 
-// Callback route to handle the OAuth response
-app.get("/callback", async (req, res) => {
-	const { code } = req.query;
+app.get("/callback", function (req, res) {
+  oauthClient
+    .createToken(req.url)
+    .then(function (authResponse) {
+      oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
+    })
+    .catch(function (e) {
+      console.error(e);
+    });
 
-	if (!code) {
-		return res.status(400).send("Authorization code is missing.");
-	}
-
-	try {
-		// Exchange the authorization code for tokens
-		const tokenResponse = await oauthClient.createToken(req.url);
-
-		// Get the access token and refresh token
-		const accessToken = tokenResponse.getJson();
-		console.log("Access Token:", accessToken.access_token); // Log Access Token
-		console.log("OAuth Token:", accessToken.refresh_token); // Log Refresh Token (if available)
-
-		// Send a response to the user
-		res.send("Authentication successful! Check your console for tokens.");
-	} catch (error) {
-		console.error("Error during token exchange:", error);
-		res.status(500).send("Authentication failed.");
-	}
+  res.send("");
 });
 
-// Start the Express server
-app.listen(PORT, () => {
-	console.log(`Server running at http://localhost:${PORT}`);
+app.get("/retrieveToken", function (req, res) {
+  res.send(oauth2_token_json);
+});
+
+app.get("/refreshAccessToken", function (req, res) {
+  oauthClient
+    .refresh()
+    .then(function (authResponse) {
+      console.log(
+        `\n The Refresh Token is  ${JSON.stringify(authResponse.json)}`,
+      );
+      oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
+      res.send(oauth2_token_json);
+    })
+    .catch(function (e) {
+      console.error(e);
+    });
+});
+
+function refreshToken() {
+  app.get("/refreshAccessToken", function (req, res) {
+    oauthClient
+      .refresh()
+      .then(function (authResponse) {
+        console.log(
+          `\n The Refresh Token is  ${JSON.stringify(authResponse.json)}`,
+        );
+        oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
+        res.send(oauth2_token_json);
+      })
+      .catch(function (e) {
+        console.error(e);
+      });
+  });
+}
+
+function fetchToken() {
+  fetch("localhost:3000/refreshAccessToken")
+    .then((response) => response.json())
+    .then((data) => {
+      console.log(data);
+    })
+    .catch((error) => {
+      console.error(`Error: ${error.message}`);
+    });
+}
+fetchToken();
+module.exports = {
+  refreshToken,
+  helloWorld,
+  fetchToken,
+};
+
+// app.get("/callback", async (req, res) => {
+//   try {
+//     oauthClient.createToken(req.url);
+//     res.send("Tokens generated and stored!");
+//   } catch (err) {
+//     console.error("Error during token generation: ", err);
+//     res.status(500).send("Failed to generate tokens.");
+//   }
+// });
+
+// app.get("/makeApiCall", async (req, res) => {
+//   try {
+//     if (!storedTokens) {
+//       return res
+//         .status(401)
+//         .send("No tokens available. Please authenticate first.");
+//     }
+
+// Restore tokens into the client
+// oauthClient = oauthClient.setToken(storedTokens.access_token);
+
+// Refresh token if necessary
+//     if (oauthClient.isAccessTokenValid()) {
+//       console.log("Access token is valid.");
+//     } else {
+//       console.log("Access token expired. Refreshing...");
+//       const tokenResponse = await oauthClient.refresh();
+//       storedTokens = tokenResponse.getJson();
+//     }
+//   } catch (err) {
+//     console.log("Not working");
+//   }
+// });
+//   res.json(response.getJson());
+// } catch (err) {
+//   console.error("Error making API call: ", err);
+//   res.status(500).send("Failed to make API call.");
+// }
+// });
+
+// app.listen(PORT, () => {
+//   console.log(`Server running on http://localhost:${PORT}`);
+// });
+const server = app.listen(PORT || 3000, () => {
+  console.log(`💻 Server listening on port ${server.address().port}`);
 });
