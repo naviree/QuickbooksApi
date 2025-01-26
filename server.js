@@ -29,21 +29,6 @@ if (require.main === module) {
 	});
 }
 
-// function oAuth() {
-//   let oauthClient = new OAuthClient({
-//     clientId:
-//     clientSecret: process.env.CLIENT_SECRET,
-//     environment: "sandbox",
-//     redirectUri: `http://localhost:${PORT}/callback`,
-//   });
-// }
-// let oauthClient = new OAuthClient({
-//   clientId: process.env.CLIENT_ID,
-//   clientSecret: process.env.CLIENT_SECRET,
-//   environment: "sandbox",
-//   redirectUri: `http://localhost:${PORT}/callback`,
-// });
-
 app.get("/", (req, res) => {
 	res.render("index");
 });
@@ -96,81 +81,3 @@ app.get("/refreshAccessToken", function (req, res) {
 			console.error(e);
 		});
 });
-
-// function refreshToken() {
-//   app.get("/refreshAccessToken", function (req, res) {
-//     oauthClient
-//       .refresh()
-//       .then(function (authResponse) {
-//         console.log(
-//           `\n The Refresh Token is  ${JSON.stringify(authResponse.json)}`,
-//         );
-//         oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
-//         res.send(oauth2_token_json);
-//       })
-//       .catch(function (e) {
-//         console.error(e);
-//       });
-//   });
-// }
-async function fetchToken() {
-	try {
-		const response = await fetch(
-			"http://localhost:3000/refreshAccessToken"
-		);
-		if (!response.ok) {
-			throw new Error(`HTTP error! Status: ${response.status}`);
-		}
-		const data = await response.json();
-		return data;
-	} catch (error) {
-		console.error("Fetch error:", error);
-		throw error; // Re-throw the error to handle it in the caller
-	}
-}
-
-module.exports = { fetchToken };
-
-// app.get("/callback", async (req, res) => {
-//   try {
-//     oauthClient.createToken(req.url);
-//     res.send("Tokens generated and stored!");
-//   } catch (err) {
-//     console.error("Error during token generation: ", err);
-//     res.status(500).send("Failed to generate tokens.");
-//   }
-// });
-
-// app.get("/makeApiCall", async (req, res) => {
-//   try {
-//     if (!storedTokens) {
-//       return res
-//         .status(401)
-//         .send("No tokens available. Please authenticate first.");
-//     }
-
-// Restore tokens into the client
-// oauthClient = oauthClient.setToken(storedTokens.access_token);
-
-// Refresh token if necessary
-//     if (oauthClient.isAccessTokenValid()) {
-//       console.log("Access token is valid.");
-//     } else {
-//       console.log("Access token expired. Refreshing...");
-//       const tokenResponse = await oauthClient.refresh();
-//       storedTokens = tokenResponse.getJson();
-//     }
-//   } catch (err) {
-//     console.log("Not working");
-//   }
-// });
-//   res.json(response.getJson());
-// } catch (err) {
-//   console.error("Error making API call: ", err);
-//   res.status(500).send("Failed to make API call.");
-// }
-// });
-
-// app.listen(PORT, () => {
-//   console.log(`Server running on http://localhost:${PORT}`);
-// });
