@@ -1,6 +1,8 @@
-SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers] 
+USE [DNNTEST2]
+SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] 
 
-
+-- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
+-- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 
 CREATE TABLE JNGrease_QuickBooksCustomers_2 
 (
@@ -8,11 +10,10 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   CustomerName NVARCHAR(500),
   Contact_FirstName NVARCHAR(500),
   Contact_LastName NVARCHAR(500),
-  Customer_Status BIT,
+  Customer_Is_Active BIT,
   Telephone NVARCHAR(20),
   Email NVARCHAR(500),
   WebURL NVARCHAR(1000),
-  BillingAddress INT,
   Balance DECIMAL(18,2),
   Billing_Address_ID INT,
   Billing_Address_1 NVARCHAR(1000),

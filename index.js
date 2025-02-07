@@ -1,6 +1,7 @@
 const QuickBooks = require("node-quickbooks");
 const { fetchToken } = require("./server.js");
 const { json } = require("body-parser");
+const DB = require("./db.js");
 
 const INTERVAL = 10000;
 
@@ -34,6 +35,7 @@ function refreshAuthToken() {
 // put qbo in try catch to handle errors
 
 function queryCustomers() {
+	let customer = {};
 	qbo.findCustomers(
 		{
 			fetchAll: true,
@@ -43,12 +45,23 @@ function queryCustomers() {
 				console.error("Error fetching customers:", e);
 				return;
 			}
-			let customers = response.QueryResponse.Customer;
-			if (customers) {
+			let customersRes = response.QueryResponse.Customer;
+			if (customersRes) {
+				// call function from db to fire off sql query
 			}
-			// console.log(customers);
-			customers.forEach((customer) => {
-				if (customer.BillAddr) console.log(customer.BillAddr);
+			// console.log(customersRes);
+
+			// loop through and unnest objects
+			customersRes.forEach((c) => {
+				customer.customerId = c.Id;
+				if(c.FullyQualifiedName) customer.customerName = c.FullyQualifiedName;
+				if (c.BillAddr) {
+					c.BillAddr.Line1 ? customer.billingAddress1 = c.BillAddr.Line1 : customer.billingAddress1 = null;
+					customer.billingCity = c.BillAddr.City;
+					customer.billingState = c.BillAddr.CountrySubDivisionCode;
+					customer.billingZip = c.BillAddr.PostalCode;
+				} 
+				DB.dbService.createCustomer(customer);
 			});
 		}
 	);
