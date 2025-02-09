@@ -29,6 +29,32 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   Shipping_Zip INT,
 )
 
+CREATE TABLE [dbo].[JNGrease_QuickBooksInvoices_2]
+(
+  QBTimeCreated DATETIME,
+  QBTimeModified DATETIME,
+  QBCustomerID INT,
+  QBTransactionDate DATETIME,
+  QBDueDate DATETIME,
+  InvoiceTerms NVARCHAR(1000),
+  InvoiceTotal DECIMAL(18,2),
+  InvoiceBalance DECIMAL(18,2),
+  Description NVARCHAR(1000),
+)
+
+CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
+(
+  QBTimeCreated DATETIME,
+  QBTimeModified DATETIME,
+  QBCustomerID INT,
+  QBTransactionalDate DATETIME,
+  PaymentTotal DECIMAL(18,2),
+  PaymentMethod NVARCHAR(1000),
+  DepositRef NVARCHAR(1000),
+  PaymentMemo NVARCHAR(1000),
+)
+
+
 -- UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = null
 -- DELETE CustomerName FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]

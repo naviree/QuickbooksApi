@@ -54,18 +54,17 @@ function queryCustomers() {
 			// loop through and unnest objects
 			customersRes.forEach((c) => {
 				customer.customerId = c.Id;
-				if(c.FullyQualifiedName) customer.customerName = c.FullyQualifiedName;
-				if (c.BillAddr) {
-					c.BillAddr.Line1 ? customer.billingAddress1 = c.BillAddr.Line1 : customer.billingAddress1 = null;
-					customer.billingCity = c.BillAddr.City;
-					customer.billingState = c.BillAddr.CountrySubDivisionCode;
-					customer.billingZip = c.BillAddr.PostalCode;
-				} 
-				DB.dbService.createCustomer(customer);
+				customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
+			  if (c.BillAddr) {
+					customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
+					customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
+					customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
+					customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
+			 }
 			});
+			DB.dbService.createCustomer(customer);
 		}
-	);
-}
+)};
 function queryPayments() {
 	qbo.findPayments(
 		{
