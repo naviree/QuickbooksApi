@@ -2,6 +2,7 @@ const QuickBooks = require("node-quickbooks");
 const { fetchToken } = require("./server.js");
 const { json } = require("body-parser");
 const DB = require("./db.js");
+const { Transaction } = require("mssql");
 
 const INTERVAL = 10000;
 
@@ -66,6 +67,7 @@ function queryCustomers() {
 		}
 )};
 function queryPayments() {
+	let payments = {};
 	qbo.findPayments(
 		{
 			fetchAll: true,
@@ -75,24 +77,48 @@ function queryPayments() {
 				console.error("Error fetching payments:", e);
 				return;
 			}
-			const payments = response.QueryResponse.Payment;
+			const paymentsRes = response.QueryResponse.Payment;
 
-			console.log(payments);
+			// console.log(paymentsRes);
+			paymentsRes.forEach((p) => {
+				payments.TransactionId = p.Id;
+				payments.QBTimeCreated = p.CreateTime ? p.CreateTime : null;
+				payments.QBTimeModified = p.LastUpdatedTime ? p.LastUpdatedTime : null;
+				payments.QBCustomerID = p.CustomerRef.Value ? p.CustomerRef.Value : null;
+				payments.QBTransactionDate = p.TxnDate ? p.TxnDate : null;
+				payments.PaymentTotal = p.TotalAmt ? p.TotalAmt : null;
+				payments.PaymentMethod = p.PaymentMethodRef.value ? p.PaymentMethodRef.value : null;
+				payments.DepositRef = p.DepositToAccountRef.value ? p.DepositToAccountRef.value : null;
+				payments.RelatedTransactionID = p.PaymentRefNum ? p.PaymentRefNum : null;
+				payments.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
+			});
 		}
 	);
 }
 function queryInvoices() {
+	let invoices = {};
 	return new Promise((resolve, reject) => {
 		qbo.findInvoices({ fetchAll: true }, (err, response) => {
 			if (err) {
 				console.error("Error fetching invoices:", err);
 				return reject(err);
 			}
-			const invoices = response.QueryResponse.Invoice;
-			console.log("Invoices:", invoices);
-			resolve(invoices);
-		});
+			const invoicesRes = response.QueryResponse.Invoice;
+			// console.log(invoicesRes);
+			invoicesRes.forEach((i) => {
+				TransactionID = i.ID ? i.ID : null;
+				QBTimeCreated = i.CreateTime ? i.CreateTime : null;
+				QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
+				QBCustomerID = i.CustomerRef.Value ? i.CustomerRef.Value : null;
+				QBTransactionDate = i.TxnDate ? i.TxnDate : null;
+				QBDueDate = i.DueDate ? i.DueDate : null;
+				InvoiceTerms = i.SalesTermRef.Name ? i.SalesTermRef.Name : null;
+				InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
+				InvoiceBalance = i.Balance ? i.Balance : null;
+				Description = i.CustomerMemo.Value ? i.CustomerMemo.Value : null;
+			});
 	});
+ });
 }
 
 async function main() {

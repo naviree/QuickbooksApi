@@ -29,7 +29,7 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   Shipping_Zip INT,
 )
 
-CREATE TABLE [dbo].[JNGrease_QuickBooksInvoices_2]
+CREATE TABLE JNGrease_QuickBooksInvoices_2
 (
   QBTimeCreated DATETIME,
   QBTimeModified DATETIME,
@@ -39,11 +39,12 @@ CREATE TABLE [dbo].[JNGrease_QuickBooksInvoices_2]
   InvoiceTerms NVARCHAR(1000),
   InvoiceTotal DECIMAL(18,2),
   InvoiceBalance DECIMAL(18,2),
-  Description NVARCHAR(1000),
+  Description NVARCHAR(MAX),
 )
 
-CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
+CREATE TABLE JNGrease_QuickBooksPayments_2
 (
+  TransactionID INT PRIMARY KEY,
   QBTimeCreated DATETIME,
   QBTimeModified DATETIME,
   QBCustomerID INT,
