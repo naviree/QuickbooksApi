@@ -56,12 +56,34 @@ function queryCustomers() {
 			customersRes.forEach((c) => {
 				customer.customerId = c.Id;
 				customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
+				customer.firstName = c.GivenName ? c.GivenName : null;
+				customer.lastName = c.FamilyName ? c.FamilyName : null;
+				customer.customerActive = c.Active ? c.Active : null;
+				customer.balance = c.Balance ? c.Balance : null;
+				if(c.PrimaryPhone)
+					customer.telephone = c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null;
+				
+				if(c.PrimaryEmailAddr)
+					customer.email = c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null;
+				
+				if(c.WebbAddr)
+						customer.webAddr = c.WebAddr.URI ? c.WebAddr.URI : null;	
+				if (c.ShipAddr) {
+					customer.shippingID = c.ShipAddr.Id ? c.ShipAddr.Id : null;
+					customer.shippingAddress1 = c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null;
+					customer.shippingAddress2 = c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null;
+					customer.shippingCity = c.ShipAddr.City ? c.ShipAddr.City : null;
+					customer.shippingState = c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null;
+					customer.shippingZip = c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null;
+				}
 			  if (c.BillAddr) {
+					customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
 					customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
 					customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
 					customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
 					customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
 			 }
+			 
 			});
 			DB.dbService.createCustomer(customer);
 		}
@@ -92,6 +114,7 @@ function queryPayments() {
 				payments.RelatedTransactionID = p.PaymentRefNum ? p.PaymentRefNum : null;
 				payments.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
 			});
+			DB.dbService.createCustomer(payments);
 		}
 	);
 }
@@ -106,17 +129,18 @@ function queryInvoices() {
 			const invoicesRes = response.QueryResponse.Invoice;
 			// console.log(invoicesRes);
 			invoicesRes.forEach((i) => {
-				TransactionID = i.ID ? i.ID : null;
-				QBTimeCreated = i.CreateTime ? i.CreateTime : null;
-				QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
-				QBCustomerID = i.CustomerRef.Value ? i.CustomerRef.Value : null;
-				QBTransactionDate = i.TxnDate ? i.TxnDate : null;
-				QBDueDate = i.DueDate ? i.DueDate : null;
-				InvoiceTerms = i.SalesTermRef.Name ? i.SalesTermRef.Name : null;
-				InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
-				InvoiceBalance = i.Balance ? i.Balance : null;
-				Description = i.CustomerMemo.Value ? i.CustomerMemo.Value : null;
+				invoices.TransactionID = i.ID ? i.ID : null;
+				invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
+				invoices.QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
+				invoices.QBCustomerID = i.CustomerRef.Value ? i.CustomerRef.Value : null;
+				invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
+				invoices.QBDueDate = i.DueDate ? i.DueDate : null;
+				invoices.InvoiceTerms = i.SalesTermRef.Name ? i.SalesTermRef.Name : null;
+				invoices.InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
+				invoices.InvoiceBalance = i.Balance ? i.Balance : null;
+				invoices.Description = i.CustomerMemo.Value ? i.CustomerMemo.Value : null;
 			});
+			DB.dbService.createCustomer(invoices);
 	});
  });
 }

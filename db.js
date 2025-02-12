@@ -20,11 +20,11 @@ async function connectDB() {
 		console.error("Database connection failed:", err);
 	}
 }
-
+// '${customer.shippingID}', '${customer.shippingAddress1}', '${customer.shippingAddress2}', '${customer.shippingCity}', '${customer.shippingState}', '${customer.shippingZip}',
 let dbService = {};
 
 dbService.createCustomer = async function (customer) {
-	let query = `INSERT INTO dbo.JNGrease_QuickBooksCustomers_2 (CustomerId, CustomerName, Billing_Address_1, Billing_City, Billing_State, Billing_Zip) VALUES ('${customer.customerId}', '${customer.customerName}', '${customer.billingAddress1}', '${customer.billingCity}', '${customer.billingState}', '${customer.billingZip}')`;
+	let query = `INSERT INTO dbo.JNGrease_QuickBooksCustomers_2 (CustomerId, CustomerName, Contact_FirstName, Contact_LastName, Customer_Is_Active, Telephone, Email, WebURL, Balance, Billing_Address_ID, Billing_Address_1, Billing_City, Billing_State, Billing_Zip, Shipping_Address_ID, Shipping_Address_1, Shipping_Address_2, Shipping_City, Shipping_State, Shipping_Zip) VALUES ('${customer.customerId}', '${customer.customerName}','${customer.firstName}','${customer.lastName}', '${customer.customerActive}', '${customer.telephone}', '${customer.email}', '${customer.webAddr}','${customer.balance}' '${customer.billingID}','${customer.billingAddress1}', '${customer.billingCity}', '${customer.billingState}', '${customer.billingZip}')'${customer.shippingID}', '${customer.shippingAddress1}', '${customer.shippingAddress2}', '${customer.shippingCity}', '${customer.shippingState}', '${customer.shippingZip}'`;
 	try {
 		let result = await sql.query(query);
 		console.log(result);

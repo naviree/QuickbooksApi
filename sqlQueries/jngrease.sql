@@ -1,6 +1,7 @@
 USE [DNNTEST2]
 SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] 
-
+SELECT * FROM [dbo].[JNGrease_QuickBooksInvoices_2] 
+SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2] 
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 
@@ -60,3 +61,4 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
 -- DELETE CustomerName FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]
+-- SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2]
