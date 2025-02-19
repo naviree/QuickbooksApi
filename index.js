@@ -152,7 +152,7 @@ function queryInvoices() {
 				invoices.InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
 				invoices.InvoiceBalance = i.Balance ? i.Balance : null;
 				invoices.Description = i.CustomerMemo.Value ? i.CustomerMemo.Value : null;
-
+ //hello
 
 			});
 			// DB.dbService.createCustomer(invoices);
