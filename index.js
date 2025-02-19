@@ -36,10 +36,17 @@ function refreshAuthToken() {
 // put qbo in try catch to handle errors
 
 function queryCustomers() {
+	let date = new Date();
+	date.setDate(date.getDate() - 5);
 	 qbo.findCustomers(
-		{
-			fetchAll: true,
-		},
+		// {
+		// 	fetchAll: true,
+		// 	desc: 'MetaData.LastUpdatedTime'
+		// },
+		[
+			{field: 'MetaData.LastUpdatedTime', value: date, operator: '>='},
+			// {field: 'MetaData.LastUpdatedTime', value: '2025-02-18', operator: '<'}	
+		],
 		function (e, response) {
 			if (e) {
 				console.error("Error fetching customers:", e);
@@ -49,43 +56,43 @@ function queryCustomers() {
 			if (customersRes) {
 				// call function from db to fire off sql query
 			}
-			// console.log(customersRes);
+			 console.log(customersRes);
 
 			// loop through and unnest objects
-			customersRes.forEach((c) => {
-				let customer = {};
-				customer.customerId = c.Id;
-				customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
-				customer.firstName = c.GivenName ? c.GivenName : null;
-				customer.lastName = c.FamilyName ? c.FamilyName : null;
-				customer.customerActive = c.Active ? c.Active : null;
-				customer.balance = c.Balance ? c.Balance : null;
-				if(c.PrimaryPhone)
-					customer.telephone = c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null;
+			// customersRes.forEach((c) => {
+			// 	let customer = {};
+			// 	customer.customerId = c.Id;
+			// 	customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
+			// 	customer.firstName = c.GivenName ? c.GivenName : null;
+			// 	customer.lastName = c.FamilyName ? c.FamilyName : null;
+			// 	customer.customerActive = c.Active ? c.Active : null;
+			// 	customer.balance = c.Balance ? c.Balance : null;
+			// 	if(c.PrimaryPhone)
+			// 		customer.telephone = c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null;
 				
-				if(c.PrimaryEmailAddr)
-					customer.email = c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null;
+			// 	if(c.PrimaryEmailAddr)
+			// 		customer.email = c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null;
 				
-				if(c.WebbAddr)
-						customer.webAddr = c.WebAddr.URI ? c.WebAddr.URI : null;	
-				if (c.ShipAddr) {
-					customer.shippingID = c.ShipAddr.Id ? c.ShipAddr.Id : null;
-					customer.shippingAddress1 = c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null;
-					customer.shippingAddress2 = c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null;
-					customer.shippingCity = c.ShipAddr.City ? c.ShipAddr.City : null;
-					customer.shippingState = c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null;
-					customer.shippingZip = c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null;
-				}
-			  if (c.BillAddr) {
-					customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
-					customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
-					customer.billingAddress2 = c.BillAddr.Line2 ? c.BillAddr.Line2 : null;
-					customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
-					customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
-					customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
-			 }
-			 DB.dbService.createCustomer(customer); 
-			});
+			// 	if(c.WebbAddr)
+			// 			customer.webAddr = c.WebAddr.URI ? c.WebAddr.URI : null;	
+			// 	if (c.ShipAddr) {
+			// 		customer.shippingID = c.ShipAddr.Id ? c.ShipAddr.Id : null;
+			// 		customer.shippingAddress1 = c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null;
+			// 		customer.shippingAddress2 = c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null;
+			// 		customer.shippingCity = c.ShipAddr.City ? c.ShipAddr.City : null;
+			// 		customer.shippingState = c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null;
+			// 		customer.shippingZip = c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null;
+			// 	}
+			//   if (c.BillAddr) {
+			// 		customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
+			// 		customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
+			// 		customer.billingAddress2 = c.BillAddr.Line2 ? c.BillAddr.Line2 : null;
+			// 		customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
+			// 		customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
+			// 		customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
+			//  }
+			//  DB.dbService.createCustomer(customer); 
+			// });
 		}
 )};
 function queryPayments() {
@@ -120,14 +127,20 @@ function queryPayments() {
 }
 function queryInvoices() {
 	let invoices = {};
+	let date = new Date();
+	date.setDate(date.getDate() - 5);
 	return new Promise((resolve, reject) => {
-		qbo.findInvoices({ fetchAll: true }, (err, response) => {
+		qbo.findInvoices( 		[
+			{field: 'MetaData.LastUpdatedTime', value: date, operator: '>='},
+			// {field: 'MetaData.LastUpdatedTime', value: '2025-02-18', operator: '<'}	
+		],  (err, response) => {
 			if (err) {
 				console.error("Error fetching invoices:", err);
 				return reject(err);
 			}
+			// const customField = response.QueryResponse.Invoice.CustomField;
 			const invoicesRes = response.QueryResponse.Invoice;
-			// console.log(invoicesRes);
+			console.log(customField);
 			invoicesRes.forEach((i) => {
 				invoices.TransactionID = i.ID ? i.ID : null;
 				invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
@@ -139,8 +152,10 @@ function queryInvoices() {
 				invoices.InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
 				invoices.InvoiceBalance = i.Balance ? i.Balance : null;
 				invoices.Description = i.CustomerMemo.Value ? i.CustomerMemo.Value : null;
+
+
 			});
-			DB.dbService.createCustomer(invoices);
+			// DB.dbService.createCustomer(invoices);
 	});
  });
 }
@@ -150,9 +165,9 @@ async function main() {
 		// Refresh token
 		await refreshAuthToken();
 
-		await queryCustomers();
+		// await queryCustomers();
 		// await queryPayments();
-		// await queryInvoices();
+		await queryInvoices();
 	} catch (error) {
 		console.error("Error:", error);
 	}

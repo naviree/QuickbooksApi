@@ -28,7 +28,11 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   Shipping_City NVARCHAR(1000),
   Shipping_State NVARCHAR(1000),
   Shipping_Zip NVARCHAR(500),
+  QBTimeCreated DATETIME,
+  QBTimeModified DATETIME 
 )
+
+ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeModified DATETIME
 
 CREATE TABLE JNGrease_QuickBooksInvoices_2
 (
@@ -62,5 +66,7 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2r
-
-SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE Balance IS NULL 
+-- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE CustomerID = 28
+-- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE Balance IS NULL 
+-- ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeCreated DATETIME
+-- ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeModified DATETIME

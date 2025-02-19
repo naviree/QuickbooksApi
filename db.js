@@ -23,6 +23,7 @@ async function connectDB() {
 
 let dbService = {};
 
+
 dbService.createCustomer = async function (customer) {
 	let query = `INSERT INTO dbo.JNGrease_QuickBooksCustomers_2 
 		(CustomerId, CustomerName, Contact_FirstName, Contact_LastName, Customer_Is_Active, 
@@ -53,16 +54,8 @@ dbService.createCustomer = async function (customer) {
 		request.input("billingState", sql.VarChar, customer.billingState);
 		request.input("billingZip", sql.VarChar, customer.billingZip);
 		request.input("shippingID", sql.Int, customer.shippingID);
-		request.input(
-			"shippingAddress1",
-			sql.VarChar,
-			customer.shippingAddress1
-		);
-		request.input(
-			"shippingAddress2",
-			sql.VarChar,
-			customer.shippingAddress2
-		);
+		request.input("shippingAddress1",sql.VarChar,customer.shippingAddress1);
+		request.input("shippingAddress2",sql.VarChar,customer.shippingAddress2);
 		request.input("shippingCity", sql.VarChar, customer.shippingCity);
 		request.input("shippingState", sql.VarChar, customer.shippingState);
 		request.input("shippingZip", sql.VarChar, customer.shippingZip);
