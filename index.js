@@ -13,7 +13,7 @@ function refreshAuthToken() {
 	return fetchToken()
 		.then((data) => {
 			const accessToken = data.access_token; // Access the access_token
-			console.log("Access Token:", accessToken);
+			// console.log("Access Token:", accessToken);
 
 			qbo = new QuickBooks(
 				"ABPsAQVR4ZAW8eK0lJ1YHVeSf4zTunjo3MHFqlEExoh5qfho81", // consumerKey
@@ -36,8 +36,7 @@ function refreshAuthToken() {
 // put qbo in try catch to handle errors
 
 function queryCustomers() {
-	let customer = {};
-	qbo.findCustomers(
+	 qbo.findCustomers(
 		{
 			fetchAll: true,
 		},
@@ -54,6 +53,7 @@ function queryCustomers() {
 
 			// loop through and unnest objects
 			customersRes.forEach((c) => {
+				let customer = {};
 				customer.customerId = c.Id;
 				customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
 				customer.firstName = c.GivenName ? c.GivenName : null;
@@ -79,13 +79,13 @@ function queryCustomers() {
 			  if (c.BillAddr) {
 					customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
 					customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
+					customer.billingAddress2 = c.BillAddr.Line2 ? c.BillAddr.Line2 : null;
 					customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
 					customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
 					customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
 			 }
-			 
+			 DB.dbService.createCustomer(customer); 
 			});
-			DB.dbService.createCustomer(customer);
 		}
 )};
 function queryPayments() {

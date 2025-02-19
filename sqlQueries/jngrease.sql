@@ -21,13 +21,13 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   Billing_Address_2 NVARCHAR(1000),
   Billing_City NVARCHAR(1000),
   Billing_State NVARCHAR(1000),
-  Billing_Zip INT,
+  Billing_Zip NVARCHAR(500),
   Shipping_Address_ID INT,
   Shipping_Address_1 NVARCHAR(1000),
   Shipping_Address_2 NVARCHAR(1000),
   Shipping_City NVARCHAR(1000),
   Shipping_State NVARCHAR(1000),
-  Shipping_Zip INT,
+  Shipping_Zip NVARCHAR(500),
 )
 
 CREATE TABLE JNGrease_QuickBooksInvoices_2
@@ -58,7 +58,9 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
 
 
 -- UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = null
--- DELETE CustomerName FROM [dbo].[JNGrease_QuickBooksCustomers_2]
+-- DELETE  FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]
--- SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2]
+-- SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2r
+
+SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE Balance IS NULL 
