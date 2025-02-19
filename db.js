@@ -46,7 +46,7 @@ dbService.createCustomer = async function (customer) {
 		request.input("telephone", sql.VarChar, customer.telephone);
 		request.input("email", sql.VarChar, customer.email);
 		request.input("webAddr", sql.VarChar, customer.webAddr);
-		request.input("balance", sql.Decimal(19, 4), customer.balance);
+		request.input("balance", sql.Decimal(18, 2), customer.balance);
 		request.input("billingID", sql.Int, customer.billingID);
 		request.input("billingAddress1", sql.VarChar, customer.billingAddress1);
 		request.input("billingAddress2", sql.VarChar, customer.billingAddress2);
@@ -63,6 +63,62 @@ dbService.createCustomer = async function (customer) {
 		let result = await request.query(query);
 		console.log(result);
 	} catch (err) {
+		console.error(err);
+	}
+};
+
+db Service.createInvoice = async function (invoice) {
+	let query = `INSERT INTO dbo.JNGrease_QuickBooksInvoices_2 
+		(TransactionId, QBTimeCreated, QBTimeModified, QBCustomerID, QBTransactionDate, QBDueDate, InvoiceTerms,
+		InvoiceTotal, InvoiceBalance, Description)
+		VALUES 
+		(@transactionId, @qbTimeCreated, @qbTimeModified, @qbCustomerID, @qbTransactionDate, @qbDueDate,
+		@invoiceTerms, @invoiceTotal, @invoiceBalance, @description)`;
+	try {
+		let request = new sql.Request();
+		request.input("transactionId", sql.VarChar, invoice.transactionId);
+		request.input("qbTimeCreated", sql.DateTime, invoice.qbTimeCreated);
+		request.input("qbTimeModified", sql.DateTime, invoice.qbTimeModified);
+		request.input("qbCustomerID", sql.VarChar, invoice.qbCustomerID);
+		request.input("qbTransactionDate", sql.DateTime, invoice.qbTransactionDate);
+		request.input("qbDueDate", sql.DateTime, invoice.qbDueDate);
+		request.input("invoiceTerms", sql.VarChar, invoice.invoiceTerms);
+		request.input("invoiceTotal", sql.Decimal(18, 2), invoice.invoiceTotal);
+		request.input("invoiceBalance", sql.Decimal(18, 2), invoice.invoiceBalance);
+		request.input("description", sql.VarChar, invoice.description);
+
+		let result = await request.query(query);
+		console.log(result);
+	}
+	catch (err) {
+		console.error(err);
+	}
+};
+
+dbService.createPayment = async function (payment) {
+	let query = `INSERT INTO dbo.JNGrease_QuickBooksPayments_2 
+		(TransactionId, QBTimeCreated, QBTimeModified, QBCustomerID, QBTransactionDate, PaymentTotal, PaymentMethod,
+		DepositRef, RelatedTransactionId, PaymentMemo)
+		VALUES 
+		(@transactionId, @qbTimeCreated, @qbTimeModified, @qbCustomerID, @qbTransactionDate, @paymentTotal, @paymentMethod,
+		@depositRef, @relatedTransactionId, @paymentMemo)`;
+	try {
+		let request = new sql.Request();
+		request.input("transactionId", sql.VarChar, payment.transactionId);
+		request.input("qbTimeCreated", sql.DateTime, payment.qbTimeCreated);
+		request.input("qbTimeModified", sql.DateTime, payment.qbTimeModified);
+		request.input("qbCustomerID", sql.VarChar, payment.qbCustomerID);
+		request.input("qbTransactionDate", sql.DateTime, payment.qbTransactionDate);
+		request.input("paymentTotal", sql.Decimal(18, 2), payment.paymentTotal);
+		request.input("paymentMethod", sql.VarChar, payment.paymentMethod);
+		request.input("depositRef", sql.VarChar, payment.depositRef);
+		request.input("relatedTransactionId", sql.VarChar, payment.relatedTransactionId);
+		request.input("paymentMemo", sql.VarChar, payment.paymentMemo);
+		let result
+		result = await request.query(query);
+		console.log(result);
+	}
+	catch (err) {
 		console.error(err);
 	}
 };
