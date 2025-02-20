@@ -67,7 +67,7 @@ dbService.createCustomer = async function (customer) {
 	}
 };
 
-db Service.createInvoice = async function (invoice) {
+dbService.createInvoice = async function (invoice) {
 	let query = `INSERT INTO dbo.JNGrease_QuickBooksInvoices_2 
 		(TransactionId, QBTimeCreated, QBTimeModified, QBCustomerID, QBTransactionDate, QBDueDate, InvoiceTerms,
 		InvoiceTotal, InvoiceBalance, Description)

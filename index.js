@@ -151,29 +151,26 @@ function queryInvoices() {
         }
 
         const invoicesRes = response.QueryResponse.Invoice;
+
         // console.log(invoicesRes);
-        const firstCustomField = invoiceRes.CustomField[0];
-        console.log(firstCustomField.StringValue);
+       
         invoicesRes.forEach((i) => {
-          invoices.TransactionID = i.ID ? i.ID : null;
-          invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
-          invoices.QBTimeModified = i.LastUpdatedTime
-            ? i.LastUpdatedTime
-            : null;
-          invoices.QBCustomerID = i.CustomerRef.Value
-            ? i.CustomerRef.Value
-            : null;
-          invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
-          invoices.QBDueDate = i.DueDate ? i.DueDate : null;
-          invoices.InvoiceTerms = i.SalesTermRef.Name
-            ? i.SalesTermRef.Name
-            : null;
-          invoices.InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
-          invoices.InvoiceBalance = i.Balance ? i.Balance : null;
-          invoices.Description = i.CustomerMemo.Value
-            ? i.CustomerMemo.Value
-            : null;
-        });
+					invoices.TransactionID = i.ID ? i.ID : null;
+					invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
+					invoices.QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
+					invoices.QBCustomerID = i.CustomerRef?.Value || null;
+					invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
+					invoices.QBDueDate = i.DueDate ? i.DueDate : null;
+					invoices.InvoiceTerms = i.SalesTermRef?.Name || null;
+					invoices.InvoiceTotal = i.TotalAmt ? i.TotalAmt : null;
+					invoices.InvoiceBalance = i.Balance ? i.Balance : null;
+					invoices.Description = i.CustomerMemo?.Value || null;
+				
+					
+					const workOrderField = i.CustomField?.find(field => field.Name === "Work Order");
+					invoices.WorkOrder = workOrderField ? workOrderField.StringValue : null;
+				});
+				
         // DB.dbService.createCustomer(invoices);
       },
     );
