@@ -45,6 +45,7 @@ CREATE TABLE JNGrease_QuickBooksInvoices_2
   InvoiceTotal DECIMAL(18,2),
   InvoiceBalance DECIMAL(18,2),
   Description NVARCHAR(MAX),
+  WorkOrder NVARCHAR(1000),
 )
 
 CREATE TABLE JNGrease_QuickBooksPayments_2
