@@ -70,16 +70,16 @@ dbService.createCustomer = async function (customer) {
 dbService.createInvoice = async function (invoice) {
 	let query = `INSERT INTO dbo.JNGrease_QuickBooksInvoices_2 
 		(TransactionId, QBTimeCreated, QBTimeModified, QBCustomerID, QBTransactionDate, QBDueDate, InvoiceTerms,
-		InvoiceTotal, InvoiceBalance, Description, WorkOrder)
+		InvoiceTotal, InvoiceBalance, Description, WorkOrder, ReceiptNo)
 		VALUES 
 		(@transactionId, @qbTimeCreated, @qbTimeModified, @qbCustomerID, @qbTransactionDate, @qbDueDate,
-		@invoiceTerms, @invoiceTotal, @invoiceBalance, @description, @workOrder)`;
+		@invoiceTerms, @invoiceTotal, @invoiceBalance, @description, @workOrder, @receiptNo)`;
 	try {
 		let request = new sql.Request();
 		request.input("transactionId", sql.VarChar, invoice.transactionId);
 		request.input("qbTimeCreated", sql.DateTime, invoice.qbTimeCreated);
 		request.input("qbTimeModified", sql.DateTime, invoice.qbTimeModified);
-		request.input("qbCustomerID", sql.VarChar, invoice.qbCustomerID);
+		request.input("qbCustomerID", sql.Int, invoice.qbCustomerID);
 		request.input("qbTransactionDate", sql.DateTime, invoice.qbTransactionDate);
 		request.input("qbDueDate", sql.DateTime, invoice.qbDueDate);
 		request.input("invoiceTerms", sql.VarChar, invoice.invoiceTerms);
@@ -87,6 +87,7 @@ dbService.createInvoice = async function (invoice) {
 		request.input("invoiceBalance", sql.Decimal(18, 2), invoice.invoiceBalance);
 		request.input("description", sql.VarChar, invoice.description);
 		request.input("workOrder", sql.VarChar, invoice.workOrder);
+		request.input("receiptNo", sql.VarChar, invoice.receiptNo);
 
 		let result = await request.query(query);
 		console.log(result);

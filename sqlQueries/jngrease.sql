@@ -46,6 +46,7 @@ CREATE TABLE JNGrease_QuickBooksInvoices_2
   InvoiceBalance DECIMAL(18,2),
   Description NVARCHAR(MAX),
   WorkOrder NVARCHAR(1000),
+  ReceiptNo NVARCHAR(1000),
 )
 
 CREATE TABLE JNGrease_QuickBooksPayments_2
@@ -65,8 +66,10 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
 -- UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = null
 -- DELETE  FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]
+-- DROP TABLE [dbo].[JNGrease_QuickBooksInvoices_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2r
+-- SELECT * FROM [dbo].[JNGrease_QuickBooksInvoices_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE CustomerID = 28
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] WHERE Balance IS NULL 
 -- ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeCreated DATETIME

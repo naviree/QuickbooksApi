@@ -109,6 +109,15 @@ function queryPayments() {
       }
       const paymentsRes = response.QueryResponse.Payment;
 
+      paymentsRes.forEach((i) => {
+        if (i.LinkedTxn && i.LinkedTxn.length > 0) {
+            i.LinkedTxn.forEach(txn => {
+                console.log(txn);
+            });
+        }
+    });
+    
+    
       // console.log(paymentsRes);
       paymentsRes.forEach((p) => {
         payments.TransactionId = p.Id;
@@ -129,6 +138,7 @@ function queryPayments() {
           ? p.PaymentRefNum
           : null;
         payments.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
+
       });
       DB.dbService.createCustomer(payments);
     },
@@ -140,10 +150,13 @@ function queryInvoices() {
   date.setDate(date.getDate() - 5);
   return new Promise((resolve, reject) => {
     qbo.findInvoices(
-      [
-        { field: "MetaData.LastUpdatedTime", value: date, operator: ">=" },
-        // {field: 'MetaData.LastUpdatedTime', value: '2025-02-18', operator: '<'}
-      ],
+      // [
+      //   { field: "MetaData.LastUpdatedTime", value: date, operator: ">=" },
+      //   {field: 'MetaData.LastUpdatedTime', value: '2025-02-18', operator: '<'}
+      // ],
+      {
+        fetchAll: true,
+      },
       (err, response) => {
         if (err) {
           console.error("Error fetching invoices:", err);
@@ -151,14 +164,28 @@ function queryInvoices() {
         }
 
         const invoicesRes = response.QueryResponse.Invoice;
+        //console.log(invoicesRes);
+        //LinkedTxn: [ [Object] ],
+        //Line: 
+        // invoicesRes.forEach((i) => {
+        //   console.log(i.LinkedTxn[0]);
+        //   //console.log(i.Line);
+        // });
 
-        // console.log(invoicesRes);
-       
         invoicesRes.forEach((i) => {
+          
+        });
+         invoicesRes.forEach((i) => {
 					invoices.TransactionID = i.ID ? i.ID : null;
 					invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
 					invoices.QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
-					invoices.QBCustomerID = i.CustomerRef?.Value || null;
+					// invoices.QBCustomerID = i.CustomerRef.Value  null;
+        if(i.CustomerRef){
+        		invoices.QBCustomerId = i.CustomerRef.Value ? i.CustomerRef.Value : null;
+          console.log(invoices.QBCustomerId);
+        }
+        
+        
 					invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
 					invoices.QBDueDate = i.DueDate ? i.DueDate : null;
 					invoices.InvoiceTerms = i.SalesTermRef?.Name || null;
@@ -169,6 +196,10 @@ function queryInvoices() {
 					
 					const workOrderField = i.CustomField?.find(field => field.Name === "Work Order");
 					invoices.WorkOrder = workOrderField ? workOrderField.StringValue : null;
+          console.log(workOrderField);
+          const receiptNo = i.CustomField?.find(field => field.Name === "Receipt No");
+          invoices.ReceiptNo = receiptNo ? receiptNo.StringValue : null;
+          console.log(receiptNo);
 				});
 				
         // DB.dbService.createCustomer(invoices);
@@ -183,7 +214,7 @@ async function main() {
     await refreshAuthToken();
 
     // await queryCustomers();
-    // await queryPayments();
+    // await queryPayments(); 
     await queryInvoices();
   } catch (error) {
     console.error("Error:", error);
