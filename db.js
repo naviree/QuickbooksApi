@@ -100,10 +100,10 @@ dbService.createInvoice = async function (invoice) {
 dbService.createPayment = async function (payment) {
 	let query = `INSERT INTO dbo.JNGrease_QuickBooksPayments_2 
 		(TransactionId, QBTimeCreated, QBTimeModified, QBCustomerID, QBTransactionDate, PaymentTotal, PaymentMethod,
-		DepositRef, RelatedTransactionId, PaymentMemo)
+		DepositRef, RelatedTransactionId, RelatedTransactionType, PaymentMemo)
 		VALUES 
 		(@transactionId, @qbTimeCreated, @qbTimeModified, @qbCustomerID, @qbTransactionDate, @paymentTotal, @paymentMethod,
-		@depositRef, @relatedTransactionId, @paymentMemo)`;
+		@depositRef, @relatedTransactionId, @relatedTransactionType, @paymentMemo)`;
 	try {
 		let request = new sql.Request();
 		request.input("transactionId", sql.VarChar, payment.TransactionId);
@@ -114,10 +114,10 @@ dbService.createPayment = async function (payment) {
 		request.input("paymentTotal", sql.Decimal(18, 2), payment.PaymentTotal);
 		request.input("paymentMethod", sql.VarChar, payment.paymentMethod);
 		request.input("depositRef", sql.VarChar, payment.depositRef);
-		request.input("relatedTransactionId", sql.VarChar, payment.relatedTransactionId);
-		request.input("paymentMemo", sql.VarChar, payment.paymentMemo);
-		let result
-		result = await request.query(query);
+		request.input("relatedTransactionId", sql.VarChar, payment.RelatedTransactionId);
+		request.input("relatedTransactionType", sql.VarChar, payment.RelatedTransactionType);
+		request.input("paymentMemo", sql.VarChar, payment.PaymentMemo);
+		let result = await request.query(query);
 		console.log(result);
 	}
 	catch (err) {

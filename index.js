@@ -56,48 +56,46 @@ function queryCustomers() {
       if (customersRes) {
         // call function from db to fire off sql query
       }
-      console.log(customersRes);
 
-      // loop through and unnest objects
-      // customersRes.forEach((c) => {
-      // 	let customer = {};
-      // 	customer.customerId = c.Id;
-      // 	customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
-      // 	customer.firstName = c.GivenName ? c.GivenName : null;
-      // 	customer.lastName = c.FamilyName ? c.FamilyName : null;
-      // 	customer.customerActive = c.Active ? c.Active : null;
-      // 	customer.balance = c.Balance ? c.Balance : null;
-      // 	if(c.PrimaryPhone)
-      // 		customer.telephone = c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null;
+      customersRes.forEach((c) => {
+      	let customer = {};
+      	customer.customerId = c.Id;
+      	customer.customerName = c.FullyQualifiedName ? c.FullyQualifiedName : null;
+      	customer.firstName = c.GivenName ? c.GivenName : null;
+      	customer.lastName = c.FamilyName ? c.FamilyName : null;
+      	customer.customerActive = c.Active ? c.Active : null;
+      	customer.balance = c.Balance ? c.Balance : null;
+      	if(c.PrimaryPhone)
+      		customer.telephone = c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null;
 
-      // 	if(c.PrimaryEmailAddr)
-      // 		customer.email = c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null;
+      	if(c.PrimaryEmailAddr)
+      		customer.email = c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null;
 
-      // 	if(c.WebbAddr)
-      // 			customer.webAddr = c.WebAddr.URI ? c.WebAddr.URI : null;
-      // 	if (c.ShipAddr) {
-      // 		customer.shippingID = c.ShipAddr.Id ? c.ShipAddr.Id : null;
-      // 		customer.shippingAddress1 = c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null;
-      // 		customer.shippingAddress2 = c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null;
-      // 		customer.shippingCity = c.ShipAddr.City ? c.ShipAddr.City : null;
-      // 		customer.shippingState = c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null;
-      // 		customer.shippingZip = c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null;
-      // 	}
-      //   if (c.BillAddr) {
-      // 		customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
-      // 		customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
-      // 		customer.billingAddress2 = c.BillAddr.Line2 ? c.BillAddr.Line2 : null;
-      // 		customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
-      // 		customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
-      // 		customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
-      //  }
-      //  DB.dbService.createCustomer(customer);
-      // });
+      	if(c.WebbAddr)
+      			customer.webAddr = c.WebAddr.URI ? c.WebAddr.URI : null;
+      	if (c.ShipAddr) {
+      		customer.shippingID = c.ShipAddr.Id ? c.ShipAddr.Id : null;
+      		customer.shippingAddress1 = c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null;
+      		customer.shippingAddress2 = c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null;
+      		customer.shippingCity = c.ShipAddr.City ? c.ShipAddr.City : null;
+      		customer.shippingState = c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null;
+      		customer.shippingZip = c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null;
+      	}
+        if (c.BillAddr) {
+      		customer.billingID = c.BillAddr.Id ? c.BillAddr.Id : null;
+      		customer.billingAddress1 = c.BillAddr.Line1 ? c.BillAddr.Line1 : null;
+      		customer.billingAddress2 = c.BillAddr.Line2 ? c.BillAddr.Line2 : null;
+      		customer.billingCity = c.BillAddr.City ? c.BillAddr.City : null;
+      		customer.billingState = c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null;
+      		customer.billingZip = c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null;
+       }
+       DB.dbService.createCustomer(customer);
+      });
     },
   );
 }
 function queryPayments() {
-  let payments = {};
+  let payment = {};
   qbo.findPayments(
     {
       fetchAll: true,
@@ -109,36 +107,23 @@ function queryPayments() {
       }
       const paymentsRes = response.QueryResponse.Payment;
 
-    //   paymentsRes.forEach((i) => {
-    //     if (i.LinkedTxn && i.LinkedTxn.length > 0) {
-    //         i.LinkedTxn.forEach(txn => {
-    //             console.log(txn);
-    //         });
-    //     }
-    // });
-    
-    
-      // console.log(paymentsRes);
+      //  console.log(paymentsRes);
       paymentsRes.forEach((p) => {
-        payments.TransactionId = p.Id;
-        payments.QBTimeCreated = p.CreateTime ? p.CreateTime : null;
-        payments.QBTimeModified = p.LastUpdatedTime ? p.LastUpdatedTime : null;
-        payments.QBCustomerID = p.CustomerRef.Value
-          ? p.CustomerRef.Value
-          : null;
-        payments.QBTransactionDate = p.TxnDate ? p.TxnDate : null;
-        payments.PaymentTotal = p.TotalAmt ? p.TotalAmt : null;
-        payments.PaymentMethod = p.PaymentMethodRef.value
-          ? p.PaymentMethodRef.value
-          : null;
-        payments.DepositRef = p.DepositToAccountRef.value
-          ? p.DepositToAccountRef.value
-          : null;
-        payments.RelatedTransactionID = p.PaymentRefNum
-          ? p.PaymentRefNum
-          : null;
-        payments.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
-        DB.dbService.createCustomer(payments);
+        payment.TransactionId = p.Id;
+        payment.QBTimeCreated = p.MetaData.CreateTime ? p.MetaData.CreateTime : null;
+        payment.QBTimeModified = p.MetaData.LastUpdatedTime ? p.MetaData.LastUpdatedTime : null;
+        payment.QBCustomerID = p.CustomerRef.Value ? p.CustomerRef.Value : null;
+        payment.QBTransactionDate = p.TxnDate ? p.TxnDate : null;
+        payment.PaymentTotal = p.TotalAmt ? p.TotalAmt : null;
+        payment.PaymentMethod = p.PaymentMethodRef?.value || null;
+        payment.DepositRef = p.DepositToAccountRef.value ? p.DepositToAccountRef.value : null;
+        payment.RelatedTransactionID = p.PaymentRefNum ? p.PaymentRefNum : null;
+        payment.RelatedTransactionType = p.PrivateNote ? p.PrivateNote : null;
+
+        payment.LinkedTransactionID = p.Line[0].LinkedTxn[0].TxnId;
+        payment.LinkedTransactionType = p.Line[0].LinkedTxn[0].TxnType;
+        payment.PaymentMemo = p.PrivateNote ? p.PrivateNote : null; 
+        DB.dbService.createPayment(payment);
       });
     },
   );
@@ -166,10 +151,7 @@ function queryInvoices() {
         //console.log(invoicesRes);
         //LinkedTxn: [ [Object] ],
         //Line: 
-       
   
-
-        
          invoicesRes.forEach((i) => {
 					invoices.TransactionID = parseInt(i.Id);
 					invoices.QBTimeCreated = i.MetaData.CreateTime ? i.MetaData.CreateTime : null;
@@ -191,7 +173,6 @@ function queryInvoices() {
           // console.log(receiptNo);
           DB.dbService.createInvoice(invoices);
 				});
-				
       },
     );
   });
