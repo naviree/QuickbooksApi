@@ -38,7 +38,7 @@ dbService.createCustomer = async function (customer) {
 
 	try {
 		let request = new sql.Request();
-		request.input("customerId", sql.VarChar, customer.customerId);
+		request.input("customerId", sql.Int, customer.customerId);
 		request.input("customerName", sql.VarChar, customer.customerName);
 		request.input("firstName", sql.VarChar, customer.firstName);
 		request.input("lastName", sql.VarChar, customer.lastName);
@@ -76,7 +76,7 @@ dbService.createInvoice = async function (invoice) {
 		@invoiceTerms, @invoiceTotal, @invoiceBalance, @description, @workOrder, @receiptNo)`;
 	try {
 		let request = new sql.Request();
-		request.input("transactionId", sql.VarChar, invoice.transactionId);
+		request.input("transactionId", sql.Int, invoice.transactionId);
 		request.input("qbTimeCreated", sql.DateTime, invoice.qbTimeCreated);
 		request.input("qbTimeModified", sql.DateTime, invoice.qbTimeModified);
 		request.input("qbCustomerID", sql.Int, invoice.qbCustomerID);

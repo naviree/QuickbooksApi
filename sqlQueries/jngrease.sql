@@ -36,6 +36,7 @@ ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeModified DATETIME
 
 CREATE TABLE JNGrease_QuickBooksInvoices_2
 (
+  TransactionID INT PRIMARY KEY,
   QBTimeCreated DATETIME,
   QBTimeModified DATETIME,
   QBCustomerID INT,

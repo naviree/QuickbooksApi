@@ -167,25 +167,16 @@ function queryInvoices() {
         //console.log(invoicesRes);
         //LinkedTxn: [ [Object] ],
         //Line: 
-        // invoicesRes.forEach((i) => {
-        //   console.log(i.LinkedTxn[0]);
-        //   //console.log(i.Line);
-        // });
+       
+  
 
-        invoicesRes.forEach((i) => {
-          
-        });
+        
          invoicesRes.forEach((i) => {
-					invoices.TransactionID = i.ID ? i.ID : null;
+					invoices.TransactionID = i.Id; 
+          console.log(i.Id);
 					invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
 					invoices.QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
-					// invoices.QBCustomerID = i.CustomerRef.Value  null;
-        if(i.CustomerRef){
-        		invoices.QBCustomerId = i.CustomerRef.Value ? i.CustomerRef.Value : null;
-          console.log(invoices.QBCustomerId);
-        }
-        
-        
+          invoices.QBCustomerID = i.CustomerRef?.value ? i.CustomerRef.value : null;
 					invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
 					invoices.QBDueDate = i.DueDate ? i.DueDate : null;
 					invoices.InvoiceTerms = i.SalesTermRef?.Name || null;
@@ -193,16 +184,16 @@ function queryInvoices() {
 					invoices.InvoiceBalance = i.Balance ? i.Balance : null;
 					invoices.Description = i.CustomerMemo?.Value || null;
 				
-					
+          
 					const workOrderField = i.CustomField?.find(field => field.Name === "Work Order");
 					invoices.WorkOrder = workOrderField ? workOrderField.StringValue : null;
-          console.log(workOrderField);
+          // console.log(workOrderField);
           const receiptNo = i.CustomField?.find(field => field.Name === "Receipt No");
           invoices.ReceiptNo = receiptNo ? receiptNo.StringValue : null;
-          console.log(receiptNo);
+          // console.log(receiptNo);
 				});
 				
-        // DB.dbService.createCustomer(invoices);
+        DB.dbService.createInvoice(invoices);
       },
     );
   });
