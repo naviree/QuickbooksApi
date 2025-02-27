@@ -109,13 +109,13 @@ function queryPayments() {
       }
       const paymentsRes = response.QueryResponse.Payment;
 
-      paymentsRes.forEach((i) => {
-        if (i.LinkedTxn && i.LinkedTxn.length > 0) {
-            i.LinkedTxn.forEach(txn => {
-                console.log(txn);
-            });
-        }
-    });
+    //   paymentsRes.forEach((i) => {
+    //     if (i.LinkedTxn && i.LinkedTxn.length > 0) {
+    //         i.LinkedTxn.forEach(txn => {
+    //             console.log(txn);
+    //         });
+    //     }
+    // });
     
     
       // console.log(paymentsRes);
@@ -138,9 +138,8 @@ function queryPayments() {
           ? p.PaymentRefNum
           : null;
         payments.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
-
+        DB.dbService.createCustomer(payments);
       });
-      DB.dbService.createCustomer(payments);
     },
   );
 }
@@ -172,11 +171,10 @@ function queryInvoices() {
 
         
          invoicesRes.forEach((i) => {
-					invoices.TransactionID = i.Id; 
-          console.log(i.Id);
-					invoices.QBTimeCreated = i.CreateTime ? i.CreateTime : null;
-					invoices.QBTimeModified = i.LastUpdatedTime ? i.LastUpdatedTime : null;
-          invoices.QBCustomerID = i.CustomerRef?.value ? i.CustomerRef.value : null;
+					invoices.TransactionID = parseInt(i.Id);
+					invoices.QBTimeCreated = i.MetaData.CreateTime ? i.MetaData.CreateTime : null;
+					invoices.QBTimeModified = i.MetaData.LastUpdatedTime ? i.MetaData.LastUpdatedTime : null;
+          invoices.QBCustomerID = i.CustomerRef.value ? parseInt(i.CustomerRef.value) : null;
 					invoices.QBTransactionDate = i.TxnDate ? i.TxnDate : null;
 					invoices.QBDueDate = i.DueDate ? i.DueDate : null;
 					invoices.InvoiceTerms = i.SalesTermRef?.Name || null;
@@ -191,9 +189,9 @@ function queryInvoices() {
           const receiptNo = i.CustomField?.find(field => field.Name === "Receipt No");
           invoices.ReceiptNo = receiptNo ? receiptNo.StringValue : null;
           // console.log(receiptNo);
+          DB.dbService.createInvoice(invoices);
 				});
 				
-        DB.dbService.createInvoice(invoices);
       },
     );
   });
@@ -205,8 +203,8 @@ async function main() {
     await refreshAuthToken();
 
     // await queryCustomers();
-    // await queryPayments(); 
-    await queryInvoices();
+    await queryPayments(); 
+    // await queryInvoices();
   } catch (error) {
     console.error("Error:", error);
   }

@@ -4,7 +4,11 @@ SELECT * FROM [dbo].[JNGrease_QuickBooksInvoices_2]
 SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2] 
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
-
+select C.CustomerName, I.*
+from JNGrease_QuickBooksCustomers_2 C
+JOIN JNGrease_QuickBooksInvoices_2 I
+    ON C.CustomerID = I.QBCustomerID
+    WHERE C.CustomerID = 8
 CREATE TABLE JNGrease_QuickBooksCustomers_2 
 (
   CustomerID INT PRIMARY KEY,
@@ -61,11 +65,14 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
   PaymentMethod NVARCHAR(1000),
   DepositRef NVARCHAR(1000),
   PaymentMemo NVARCHAR(1000),
+  RelatedTransactionID INT,
+  RelatedTransactionType NVARCHAR(20),
 )
 
 
 -- UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = null
 -- DELETE  FROM [dbo].[JNGrease_QuickBooksCustomers_2]
+-- DELETE  FROM [dbo].[JNGrease_QuickBooksInvoices_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksCustomers_2]
 -- DROP TABLE [dbo].[JNGrease_QuickBooksInvoices_2]
 -- SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]

@@ -76,18 +76,18 @@ dbService.createInvoice = async function (invoice) {
 		@invoiceTerms, @invoiceTotal, @invoiceBalance, @description, @workOrder, @receiptNo)`;
 	try {
 		let request = new sql.Request();
-		request.input("transactionId", sql.Int, invoice.transactionId);
-		request.input("qbTimeCreated", sql.DateTime, invoice.qbTimeCreated);
-		request.input("qbTimeModified", sql.DateTime, invoice.qbTimeModified);
-		request.input("qbCustomerID", sql.Int, invoice.qbCustomerID);
-		request.input("qbTransactionDate", sql.DateTime, invoice.qbTransactionDate);
-		request.input("qbDueDate", sql.DateTime, invoice.qbDueDate);
-		request.input("invoiceTerms", sql.VarChar, invoice.invoiceTerms);
-		request.input("invoiceTotal", sql.Decimal(18, 2), invoice.invoiceTotal);
-		request.input("invoiceBalance", sql.Decimal(18, 2), invoice.invoiceBalance);
-		request.input("description", sql.VarChar, invoice.description);
-		request.input("workOrder", sql.VarChar, invoice.workOrder);
-		request.input("receiptNo", sql.VarChar, invoice.receiptNo);
+		request.input("transactionId", sql.Int, invoice.TransactionID);
+		request.input("qbTimeCreated", sql.DateTime, invoice.QBTimeCreated);
+		request.input("qbTimeModified", sql.DateTime, invoice.QBTimeModified);
+		request.input("qbCustomerID", sql.Int, invoice.QBCustomerID);
+		request.input("qbTransactionDate", sql.DateTime, invoice.QBTransactionDate);
+		request.input("qbDueDate", sql.DateTime, invoice.QBDueDate);
+		request.input("invoiceTerms", sql.VarChar, invoice.InvoiceTerms);
+		request.input("invoiceTotal", sql.Decimal(18, 2), invoice.InvoiceTotal);
+		request.input("invoiceBalance", sql.Decimal(18, 2), invoice.InvoiceBalance);
+		request.input("description", sql.VarChar, invoice.Description);
+		request.input("workOrder", sql.VarChar, invoice.WorkOrder);
+		request.input("receiptNo", sql.VarChar, invoice.ReceiptNo);
 
 		let result = await request.query(query);
 		console.log(result);
@@ -106,12 +106,12 @@ dbService.createPayment = async function (payment) {
 		@depositRef, @relatedTransactionId, @paymentMemo)`;
 	try {
 		let request = new sql.Request();
-		request.input("transactionId", sql.VarChar, payment.transactionId);
-		request.input("qbTimeCreated", sql.DateTime, payment.qbTimeCreated);
-		request.input("qbTimeModified", sql.DateTime, payment.qbTimeModified);
-		request.input("qbCustomerID", sql.VarChar, payment.qbCustomerID);
-		request.input("qbTransactionDate", sql.DateTime, payment.qbTransactionDate);
-		request.input("paymentTotal", sql.Decimal(18, 2), payment.paymentTotal);
+		request.input("transactionId", sql.VarChar, payment.TransactionId);
+		request.input("qbTimeCreated", sql.DateTime, payment.QBTimeCreated);
+		request.input("qbTimeModified", sql.DateTime, payment.QBTimeModified);
+		request.input("qbCustomerID", sql.VarChar, payment.QBCustomerID);
+		request.input("qbTransactionDate", sql.DateTime, payment.QBTransactionDate);
+		request.input("paymentTotal", sql.Decimal(18, 2), payment.PaymentTotal);
 		request.input("paymentMethod", sql.VarChar, payment.paymentMethod);
 		request.input("depositRef", sql.VarChar, payment.depositRef);
 		request.input("relatedTransactionId", sql.VarChar, payment.relatedTransactionId);
