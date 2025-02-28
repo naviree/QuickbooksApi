@@ -95,7 +95,6 @@ function queryCustomers() {
   );
 }
 function queryPayments() {
-  let payment = {};
   qbo.findPayments(
     {
       fetchAll: true,
@@ -107,21 +106,26 @@ function queryPayments() {
       }
       const paymentsRes = response.QueryResponse.Payment;
 
-      //  console.log(paymentsRes);
       paymentsRes.forEach((p) => {
+        let payment = {}; // Move this inside the forEach to create a new object for each payment
         payment.TransactionId = p.Id;
         payment.QBTimeCreated = p.MetaData.CreateTime ? p.MetaData.CreateTime : null;
         payment.QBTimeModified = p.MetaData.LastUpdatedTime ? p.MetaData.LastUpdatedTime : null;
-        payment.QBCustomerID = p.CustomerRef.Value ? p.CustomerRef.Value : null;
+        payment.QBCustomerID = p.CustomerRef?.value || null;
         payment.QBTransactionDate = p.TxnDate ? p.TxnDate : null;
         payment.PaymentTotal = p.TotalAmt ? p.TotalAmt : null;
         payment.PaymentMethod = p.PaymentMethodRef?.value || null;
-        payment.DepositRef = p.DepositToAccountRef.value ? p.DepositToAccountRef.value : null;
-        payment.RelatedTransactionID = p.PaymentRefNum ? p.PaymentRefNum : null;
-        payment.RelatedTransactionType = p.PrivateNote ? p.PrivateNote : null;
+        payment.DepositRef = p.DepositToAccountRef?.value || null;
 
-        payment.LinkedTransactionID = p.Line[0].LinkedTxn[0].TxnId;
-        payment.LinkedTransactionType = p.Line[0].LinkedTxn[0].TxnType;
+        // Check if there are linked transactions before accessing them
+        if (p.Line && p.Line[0] && p.Line[0].LinkedTxn && p.Line[0].LinkedTxn[0]) {
+          payment.RelatedTransactionId = p.Line[0].LinkedTxn[0].TxnId;
+          payment.RelatedTransactionType = p.Line[0].LinkedTxn[0].TxnType;
+        } else {
+          payment.RelatedTransactionId = null;
+          payment.RelatedTransactionType = null;
+        }
+        
         payment.PaymentMemo = p.PrivateNote ? p.PrivateNote : null; 
         DB.dbService.createPayment(payment);
       });
