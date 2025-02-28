@@ -23,6 +23,7 @@ let oauthClient = null;
 dotenv.config();
 
 const PORT = 3000;
+// Starts the serve but only once.
 if (require.main === module) {
 	const server = app.listen(PORT, () => {
 		console.log(`💻 Server listening on port ${server.address().port}`);
@@ -53,6 +54,7 @@ app.get("/authUri", urlencodedParser, function (req, res) {
 	res.send(authUri);
 });
 
+// callback service parsing the authorization token and asking for the access token
 app.get("/callback", function (req, res) {
 	oauthClient
 		.createToken(req.url)
@@ -74,6 +76,9 @@ app.get("/refreshAccessToken", function (req, res) {
 	oauthClient
 		.refresh()
 		.then(function (authResponse) {
+			console.log(
+				`\n The Refresh Token is  ${JSON.stringify(authResponse.json)}`
+			);
 			oauth2_token_json = JSON.stringify(authResponse.json, null, 2);
 			res.send(oauth2_token_json);
 		})
@@ -81,3 +86,24 @@ app.get("/refreshAccessToken", function (req, res) {
 			console.error(e);
 		});
 });
+
+// function to get the acces token when called from index.js
+async function fetchToken() {
+	try {
+		const response = await fetch(
+			"http://localhost:3000/refreshAccessToken"
+		);
+		if (!response.ok) {
+			throw new Error(`HTTP error! Status: ${response.status}`);
+		}
+		const data = await response.json();
+		return data;
+	} catch (error) {
+		console.error("Fetch error:", error);
+		throw error;
+	}
+}
+
+module.exports = {
+	fetchToken,
+};
