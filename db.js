@@ -106,15 +106,15 @@ dbService.createPayment = async function (payment) {
 		@depositRef, @relatedTransactionId, @relatedTransactionType, @paymentMemo)`;
 	try {
 		let request = new sql.Request();
-		request.input("transactionId", sql.VarChar, payment.TransactionId);
+		request.input("transactionId", sql.Int, payment.TransactionId);
 		request.input("qbTimeCreated", sql.DateTime, payment.QBTimeCreated);
 		request.input("qbTimeModified", sql.DateTime, payment.QBTimeModified);
-		request.input("qbCustomerID", sql.VarChar, payment.QBCustomerID);
+		request.input("qbCustomerID", sql.Int, payment.QBCustomerID);
 		request.input("qbTransactionDate", sql.DateTime, payment.QBTransactionDate);
 		request.input("paymentTotal", sql.Decimal(18, 2), payment.PaymentTotal);
-		request.input("paymentMethod", sql.VarChar, payment.paymentMethod);
-		request.input("depositRef", sql.VarChar, payment.depositRef);
-		request.input("relatedTransactionId", sql.VarChar, payment.RelatedTransactionId);
+		request.input("paymentMethod", sql.VarChar, payment.PaymentMethod);
+		request.input("depositRef", sql.VarChar, payment.DepositRef);
+		request.input("relatedTransactionId", sql.Int, payment.RelatedTransactionId);
 		request.input("relatedTransactionType", sql.VarChar, payment.RelatedTransactionType);
 		request.input("paymentMemo", sql.VarChar, payment.PaymentMemo);
 		let result = await request.query(query);

@@ -6,7 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="2ebd9e9f-8291-4fa5-9237-cf86ca0e2fe4" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/db.js" beforeDir="false" afterPath="$PROJECT_DIR$/db.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -42,6 +42,7 @@
   <component name="PropertiesComponent"><![CDATA[{
   "keyToString": {
     "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Database Script.jngrease.sql (1).executor": "Run",
     "Node.js.index.js.executor": "Debug",
     "Node.js.server.js.executor": "Run",
     "RunOnceActivity.OpenProjectViewOnStart": "true",
@@ -64,6 +65,24 @@
     ]
   }
 }]]></component>
+  <component name="RunManager">
+    <configuration name="jngrease.sql (1)" type="DatabaseScript" editBeforeRun="true" temporary="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/sqlQueries/jngrease.sql" />
+      <script-mode>FILE</script-mode>
+      <data-source id="e49e8067-08f1-4b4c-89de-142b543baba9" namespace="database/&quot;DNNTEST2&quot;/schema/&quot;dbo&quot;" />
+      <method v="2" />
+    </configuration>
+    <configuration name="jngrease.sql" type="DatabaseScript" editBeforeRun="true" nameIsGenerated="true">
+      <script-file value="$PROJECT_DIR$/sqlQueries/jngrease.sql" />
+      <script-mode>FILE</script-mode>
+      <method v="2" />
+    </configuration>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Database Script.jngrease.sql (1)" />
+      </list>
+    </recent_temporary>
+  </component>
   <component name="SharedIndexes">
     <attachedChunks>
       <set>
@@ -83,6 +102,7 @@
       <workItem from="1739324358446" duration="42000" />
       <workItem from="1740679693468" duration="43000" />
       <workItem from="1740679744299" duration="141000" />
+      <workItem from="1740693107842" duration="995000" />
     </task>
     <servers />
   </component>
@@ -107,8 +127,9 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/index.js</url>
-          <line>37</line>
-          <option name="timeStamp" value="12" />
+          <line>110</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

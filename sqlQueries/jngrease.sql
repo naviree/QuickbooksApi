@@ -60,7 +60,7 @@ CREATE TABLE JNGrease_QuickBooksPayments_2
   QBTimeCreated DATETIME,
   QBTimeModified DATETIME,
   QBCustomerID INT,
-  QBTransactionalDate DATETIME,
+  QBTransactionDate DATETIME,
   PaymentTotal DECIMAL(18,2),
   PaymentMethod NVARCHAR(1000),
   DepositRef NVARCHAR(1000),
