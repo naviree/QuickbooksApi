@@ -1,14 +1,15 @@
+require('dotenv').config();
 const sql = require("mssql");
 
 const config = {
-	user: "jr",
-	password: "4exr7Zbi6EJh",
-	server: "dev.jngrease.com",
-	database: "DNNTEST2",
-	port: 1433,
+	user: process.env.DB_USER,
+	password: process.env.DB_PASSWORD,
+	server: process.env.DB_HOST,
+	database: process.env.DB_NAME,
+	port: parseInt(process.env.DB_PORT),
 	options: {
-		encrypt: false, // Use encryption
-		trustServerCertificate: true, // Trust the server certificate
+		encrypt: process.env.DB_ENCRYPT === 'true',
+		trustServerCertificate: process.env.DB_TRUST_SERVER_CERT === 'true',
 	},
 };
 
@@ -25,45 +26,106 @@ let dbService = {};
 
 
 dbService.createCustomer = async function (customer) {
-	let query = `INSERT INTO dbo.JNGrease_QuickBooksCustomers_2 
-		(CustomerId, CustomerName, Contact_FirstName, Contact_LastName, Customer_Is_Active, 
-		Telephone, Email, WebURL, Balance, Billing_Address_ID, Billing_Address_1, 
-		Billing_Address_2, Billing_City, Billing_State, Billing_Zip, Shipping_Address_ID, 
-		Shipping_Address_1, Shipping_Address_2, Shipping_City, Shipping_State, Shipping_Zip) 
-		VALUES 
-		(@customerId, @customerName, @firstName, @lastName, @customerActive,
-		@telephone, @email, @webAddr, @balance, @billingID, @billingAddress1,
-		@billingAddress2, @billingCity, @billingState, @billingZip, @shippingID,
-		@shippingAddress1, @shippingAddress2, @shippingCity, @shippingState, @shippingZip)`;
-
+	// First check if customer exists
+	const checkQuery = `SELECT CustomerId FROM dbo.JNGrease_QuickBooksCustomers_2 WHERE CustomerId = @customerId`;
+	
 	try {
 		let request = new sql.Request();
 		request.input("customerId", sql.Int, customer.customerId);
-		request.input("customerName", sql.VarChar, customer.customerName);
-		request.input("firstName", sql.VarChar, customer.firstName);
-		request.input("lastName", sql.VarChar, customer.lastName);
-		request.input("customerActive", sql.Bit, customer.customerActive);
-		request.input("telephone", sql.VarChar, customer.telephone);
-		request.input("email", sql.VarChar, customer.email);
-		request.input("webAddr", sql.VarChar, customer.webAddr);
-		request.input("balance", sql.Decimal(18, 2), customer.balance);
-		request.input("billingID", sql.Int, customer.billingID);
-		request.input("billingAddress1", sql.VarChar, customer.billingAddress1);
-		request.input("billingAddress2", sql.VarChar, customer.billingAddress2);
-		request.input("billingCity", sql.VarChar, customer.billingCity);
-		request.input("billingState", sql.VarChar, customer.billingState);
-		request.input("billingZip", sql.VarChar, customer.billingZip);
-		request.input("shippingID", sql.Int, customer.shippingID);
-		request.input("shippingAddress1",sql.VarChar,customer.shippingAddress1);
-		request.input("shippingAddress2",sql.VarChar,customer.shippingAddress2);
-		request.input("shippingCity", sql.VarChar, customer.shippingCity);
-		request.input("shippingState", sql.VarChar, customer.shippingState);
-		request.input("shippingZip", sql.VarChar, customer.shippingZip);
+		const result = await request.query(checkQuery);
+		
+		if (result.recordset.length > 0) {
+			
+			const updateQuery = `UPDATE dbo.JNGrease_QuickBooksCustomers_2 
+				SET CustomerName = @customerName,
+					Contact_FirstName = @firstName,
+					Contact_LastName = @lastName,
+					Customer_Is_Active = @customerActive,
+					Telephone = @telephone,
+					Email = @email,
+					WebURL = @webAddr,
+					Balance = @balance,
+					Billing_Address_ID = @billingID,
+					Billing_Address_1 = @billingAddress1,
+					Billing_Address_2 = @billingAddress2,
+					Billing_City = @billingCity,
+					Billing_State = @billingState,
+					Billing_Zip = @billingZip,
+					Shipping_Address_ID = @shippingID,
+					Shipping_Address_1 = @shippingAddress1,
+					Shipping_Address_2 = @shippingAddress2,
+					Shipping_City = @shippingCity,
+					Shipping_State = @shippingState,
+					Shipping_Zip = @shippingZip
+				WHERE CustomerId = @customerId`;
 
-		let result = await request.query(query);
-		console.log(result);
+			request = new sql.Request();
+			request.input("customerId", sql.Int, customer.customerId);
+			request.input("customerName", sql.VarChar, customer.customerName);
+			request.input("firstName", sql.VarChar, customer.firstName);
+			request.input("lastName", sql.VarChar, customer.lastName);
+			request.input("customerActive", sql.Bit, customer.customerActive);
+			request.input("telephone", sql.VarChar, customer.telephone);
+			request.input("email", sql.VarChar, customer.email);
+			request.input("webAddr", sql.VarChar, customer.webAddr);
+			request.input("balance", sql.Decimal(18, 2), customer.balance);
+			request.input("billingID", sql.Int, customer.billingID);
+			request.input("billingAddress1", sql.VarChar, customer.billingAddress1);
+			request.input("billingAddress2", sql.VarChar, customer.billingAddress2);
+			request.input("billingCity", sql.VarChar, customer.billingCity);
+			request.input("billingState", sql.VarChar, customer.billingState);
+			request.input("billingZip", sql.VarChar, customer.billingZip);
+			request.input("shippingID", sql.Int, customer.shippingID);
+			request.input("shippingAddress1", sql.VarChar, customer.shippingAddress1);
+			request.input("shippingAddress2", sql.VarChar, customer.shippingAddress2);
+			request.input("shippingCity", sql.VarChar, customer.shippingCity);
+			request.input("shippingState", sql.VarChar, customer.shippingState);
+			request.input("shippingZip", sql.VarChar, customer.shippingZip);
+
+			await request.query(updateQuery);
+			console.log(`Updated customer with ID: ${customer.customerId}`);
+		} else {
+			// Customer doesn't exist, perform insert
+			const insertQuery = `INSERT INTO dbo.JNGrease_QuickBooksCustomers_2 
+				(CustomerId, CustomerName, Contact_FirstName, Contact_LastName, Customer_Is_Active, 
+				Telephone, Email, WebURL, Balance, Billing_Address_ID, Billing_Address_1, 
+				Billing_Address_2, Billing_City, Billing_State, Billing_Zip, Shipping_Address_ID, 
+				Shipping_Address_1, Shipping_Address_2, Shipping_City, Shipping_State, Shipping_Zip) 
+				VALUES 
+				(@customerId, @customerName, @firstName, @lastName, @customerActive,
+				@telephone, @email, @webAddr, @balance, @billingID, @billingAddress1,
+				@billingAddress2, @billingCity, @billingState, @billingZip, @shippingID,
+				@shippingAddress1, @shippingAddress2, @shippingCity, @shippingState, @shippingZip)`;
+
+			request = new sql.Request();
+			request.input("customerId", sql.Int, customer.customerId);
+			request.input("customerName", sql.VarChar, customer.customerName);
+			request.input("firstName", sql.VarChar, customer.firstName);
+			request.input("lastName", sql.VarChar, customer.lastName);
+			request.input("customerActive", sql.Bit, customer.customerActive);
+			request.input("telephone", sql.VarChar, customer.telephone);
+			request.input("email", sql.VarChar, customer.email);
+			request.input("webAddr", sql.VarChar, customer.webAddr);
+			request.input("balance", sql.Decimal(18, 2), customer.balance);
+			request.input("billingID", sql.Int, customer.billingID);
+			request.input("billingAddress1", sql.VarChar, customer.billingAddress1);
+			request.input("billingAddress2", sql.VarChar, customer.billingAddress2);
+			request.input("billingCity", sql.VarChar, customer.billingCity);
+			request.input("billingState", sql.VarChar, customer.billingState);
+			request.input("billingZip", sql.VarChar, customer.billingZip);
+			request.input("shippingID", sql.Int, customer.shippingID);
+			request.input("shippingAddress1", sql.VarChar, customer.shippingAddress1);
+			request.input("shippingAddress2", sql.VarChar, customer.shippingAddress2);
+			request.input("shippingCity", sql.VarChar, customer.shippingCity);
+			request.input("shippingState", sql.VarChar, customer.shippingState);
+			request.input("shippingZip", sql.VarChar, customer.shippingZip);
+
+			await request.query(insertQuery);
+			console.log(`Inserted new customer with ID: ${customer.customerId}`);
+		}
 	} catch (err) {
-		console.error(err);
+		console.error("Error in createCustomer:", err);
+		throw err;
 	}
 };
 

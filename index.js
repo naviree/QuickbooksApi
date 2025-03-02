@@ -1,3 +1,4 @@
+require("dotenv").config();
 const QuickBooks = require("node-quickbooks");
 const { fetchToken } = require("./server.js");
 const { json } = require("body-parser");
@@ -16,12 +17,12 @@ function refreshAuthToken() {
       // console.log("Access Token:", accessToken);
 
       qbo = new QuickBooks(
-        "ABPsAQVR4ZAW8eK0lJ1YHVeSf4zTunjo3MHFqlEExoh5qfho81", // consumerKey
-        "uL37oMDdZ4b1tAMRygRXFeendHucbpXt6l9Q5Oo3", // consumerSecret
+        process.env.QB_CLIENT_ID, // consumerKey
+        process.env.QB_CLIENT_SECRET, // consumerSecret
         accessToken, //
         null, // tokenSecret (set to null for OAuth 2.0)
-        "9341453554481946", // realmId
-        true, // use the sandbox environment
+        process.env.QB_REALM_ID, // realmId
+        process.env.QB_ENVIRONMENT === 'sandbox', // use the sandbox environment if QB_ENVIRONMENT is 'sandbox'
         false, // no debug logging
         null, // no minorversion
         "2.0", // OAuth version
@@ -188,8 +189,9 @@ async function main() {
     await refreshAuthToken();
 
     // await queryCustomers();
-    await queryPayments(); 
+    // await queryPayments(); 
     // await queryInvoices();
+    console.log("Done");
   } catch (error) {
     console.error("Error:", error);
   }
