@@ -116,7 +116,7 @@ function queryCustomers() {
 						? c.BillAddr.PostalCode
 						: null;
 				}
-				DB.dbService.createCustomer(customer);
+				DB.dbService.processCustomer(customer);
 			});
 		}
 	);
@@ -164,7 +164,7 @@ function queryPayments() {
 				}
 
 				payment.PaymentMemo = p.PrivateNote ? p.PrivateNote : null;
-				DB.dbService.createPayment(payment);
+				DB.dbService.processPayment(payment);
 			});
 		}
 	);
@@ -225,7 +225,7 @@ function queryInvoices() {
 						? receiptNo.StringValue
 						: null;
 					// console.log(receiptNo);
-					DB.dbService.createInvoice(invoices);
+					DB.dbService.processInvoice(invoices);
 				});
 			}
 		);
