@@ -1,0 +1,4 @@
+1. Make it so every function customer/payment/invoice returns true/false in try catch
+2. After running query functions, check status var and if TRUE 
+  a. write to DB create function db.js to write to log file
+3.
