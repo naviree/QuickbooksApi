@@ -11,30 +11,25 @@ let accessToken = null;
 let qbo = null;
 
 function refreshAuthToken() {
-	return fetchToken()
-		.then((data) => {
-			const accessToken = data.access_token; // Access the access_token
-			// console.log("Access Token:", accessToken);
-
-			qbo = new QuickBooks(
-				process.env.QB_CLIENT_ID, // consumerKey
-				process.env.QB_CLIENT_SECRET, // consumerSecret
-				accessToken, //
-				null, // tokenSecret (set to null for OAuth 2.0)
-				process.env.QB_REALM_ID, // realmId
-				process.env.QB_ENVIRONMENT === "sandbox", // use the sandbox environment if QB_ENVIRONMENT is 'sandbox'
-				false, // no debug logging
-				null, // no minorversion
-				"2.0" // OAuth version
-			);
-		})
-		.catch((error) => {
-			console.error("Error fetching token:", error); // Handle any errors here
-		});
-
-	// query customers
+    return fetchToken()
+        .then((data) => {
+            const accessToken = data.access_token;
+            qbo = new QuickBooks(
+                process.env.QB_CLIENT_ID,
+                process.env.QB_CLIENT_SECRET,
+                accessToken,
+                null,
+                process.env.QB_REALM_ID,
+                process.env.QB_ENVIRONMENT === "sandbox",
+                false,
+                null,
+                "2.0"
+            );
+        })
+        .catch((error) => {
+            console.error("Error fetching token:", error);
+        });
 }
-// put qbo in try catch to handle errors
 
 function queryCustomers() {
     let date = new Date();
@@ -52,34 +47,33 @@ function queryCustomers() {
                     return;
                 }
                 let customersRes = response.QueryResponse.Customer;
-                if (customersRes) {
-                    // call function from db to fire off sql query
-                }
+                
                 customersRes.forEach((c) => {
                     let customer = {
                         customerId: c.Id,
-                        customerName: c.FullyQualifiedName ? c.FullyQualifiedName : null,
-                        firstName: c.GivenName ? c.GivenName : null,
-                        lastName: c.FamilyName ? c.FamilyName : null,
-                        customerActive: c.Active ? c.Active : null,
-                        balance: c.Balance ? c.Balance : null,
-                        telephone: c.PrimaryPhone ? (c.PrimaryPhone.FreeFormNumber ? c.PrimaryPhone.FreeFormNumber : null) : null,
-                        email: c.PrimaryEmailAddr ? (c.PrimaryEmailAddr.Address ? c.PrimaryEmailAddr.Address : null) : null,
-                        webAddr: c.WebAddr ? (c.WebAddr.URI ? c.WebAddr.URI : null) : null,
-                        shippingID: c.ShipAddr ? (c.ShipAddr.Id ? c.ShipAddr.Id : null) : null,
-                        shippingAddress1: c.ShipAddr ? (c.ShipAddr.Line1 ? c.ShipAddr.Line1 : null) : null,
-                        shippingAddress2: c.ShipAddr ? (c.ShipAddr.Line2 ? c.ShipAddr.Line2 : null) : null,
-                        shippingCity: c.ShipAddr ? (c.ShipAddr.City ? c.ShipAddr.City : null) : null,
-                        shippingState: c.ShipAddr ? (c.ShipAddr.CountrySubDivisionCode ? c.ShipAddr.CountrySubDivisionCode : null) : null,
-                        shippingZip: c.ShipAddr ? (c.ShipAddr.PostalCode ? c.ShipAddr.PostalCode : null) : null,
-                        billingID: c.BillAddr ? (c.BillAddr.Id ? c.BillAddr.Id : null) : null,
-                        billingAddress1: c.BillAddr ? (c.BillAddr.Line1 ? c.BillAddr.Line1 : null) : null,
-                        billingAddress2: c.BillAddr ? (c.BillAddr.Line2 ? c.BillAddr.Line2 : null) : null,
-                        billingCity: c.BillAddr ? (c.BillAddr.City ? c.BillAddr.City : null) : null,
-                        billingState: c.BillAddr ? (c.BillAddr.CountrySubDivisionCode ? c.BillAddr.CountrySubDivisionCode : null) : null,
-                        billingZip: c.BillAddr ? (c.BillAddr.PostalCode ? c.BillAddr.PostalCode : null) : null
+                        customerName: c.FullyQualifiedName || null,
+                        firstName: c.GivenName || null,
+                        lastName: c.FamilyName || null,
+                        customerActive: c.Active || null,
+                        balance: c.Balance || null,
+                        telephone: c.PrimaryPhone?.FreeFormNumber || null,
+                        email: c.PrimaryEmailAddr?.Address || null,
+                        webAddr: c.WebAddr?.URI || null,
+                        shippingID: c.ShipAddr?.Id || null,
+                        shippingAddress1: c.ShipAddr?.Line1 || null,
+                        shippingAddress2: c.ShipAddr?.Line2 || null,
+                        shippingCity: c.ShipAddr?.City || null,
+                        shippingState: c.ShipAddr?.CountrySubDivisionCode || null,
+                        shippingZip: c.ShipAddr?.PostalCode || null,
+                        billingID: c.BillAddr?.Id || null,
+                        billingAddress1: c.BillAddr?.Line1 || null,
+                        billingAddress2: c.BillAddr?.Line2 || null,
+                        billingCity: c.BillAddr?.City || null,
+                        billingState: c.BillAddr?.CountrySubDivisionCode || null,
+                        billingZip: c.BillAddr?.PostalCode || null,
                     };
-                    let status = DB.dbService.processCustomer(customer);
+                    
+                    status = DB.dbService.processCustomer(customer);
                 });
             }
         );
@@ -91,63 +85,85 @@ function queryCustomers() {
 }
 
 function queryPayments() {
-	qbo.findPayments({ fetchAll: true }, (e, response) => {
-			if (e) return console.error("Error fetching payments:", e);
-			response.QueryResponse.Payment.forEach((p) => {
-					let payment = {
-							TransactionId: p.Id,
-							QBTimeCreated: p.MetaData.CreateTime || null,
-							QBTimeModified: p.MetaData.LastUpdatedTime || null,
-							QBCustomerID: p.CustomerRef?.value || null,
-							QBTransactionDate: p.TxnDate || null,
-							PaymentTotal: p.TotalAmt || null,
-							PaymentMethod: p.PaymentMethodRef?.value || null,
-							DepositRef: p.DepositToAccountRef?.value || null,
-							RelatedTransactionId: p.Line?.[0]?.LinkedTxn?.[0]?.TxnId || null,
-							RelatedTransactionType: p.Line?.[0]?.LinkedTxn?.[0]?.TxnType || null,
-							PaymentMemo: p.PrivateNote || null,
-					};
-					DB.dbService.processPayment(payment);
-			});
-	});
+    qbo.findPayments(
+        { fetchAll: true },
+        function (e, response) {
+            if (e) {
+                console.error("Error fetching payments:", e);
+                return;
+            }
+            
+            response.QueryResponse.Payment.forEach((p) => {
+                let payment = {
+                    TransactionId: p.Id,
+                    QBTimeCreated: p.MetaData.CreateTime || null,
+                    QBTimeModified: p.MetaData.LastUpdatedTime || null,
+                    QBCustomerID: p.CustomerRef?.value || null,
+                    QBTransactionDate: p.TxnDate || null,
+                    PaymentTotal: p.TotalAmt || null,
+                    PaymentMethod: p.PaymentMethodRef?.value || null,
+                    DepositRef: p.DepositToAccountRef?.value || null,
+                    RelatedTransactionId: p.Line?.[0]?.LinkedTxn?.[0]?.TxnId || null,
+                    RelatedTransactionType: p.Line?.[0]?.LinkedTxn?.[0]?.TxnType || null,
+                    PaymentMemo: p.PrivateNote || null,
+                };
+                
+                DB.dbService.processPayment(payment);
+            });
+        }
+    );
 }
 
 function queryInvoices() {
-	let date = new Date();
-	date.setDate(date.getDate() - 5);
-	return new Promise((resolve, reject) => {
-			qbo.findInvoices({ fetchAll: true }, (err, response) => {
-					if (err) return reject(console.error("Error fetching invoices:", err));
-					response.QueryResponse.Invoice.forEach((i) => {
-							let invoices = {
-									TransactionID: parseInt(i.Id),
-									QBTimeCreated: i.MetaData.CreateTime || null,
-									QBTimeModified: i.MetaData.LastUpdatedTime || null,
-									QBCustomerID: i.CustomerRef.value ? parseInt(i.CustomerRef.value) : null,
-									QBTransactionDate: i.TxnDate || null,
-									QBDueDate: i.DueDate || null,
-									InvoiceTerms: i.SalesTermRef?.Name || null,
-									InvoiceTotal: i.TotalAmt || null,
-									InvoiceBalance: i.Balance || null,
-									Description: i.CustomerMemo?.Value || null,
-									WorkOrder: i.CustomField?.find(f => f.Name === "Work Order")?.StringValue || null,
-									ReceiptNo: i.CustomField?.find(f => f.Name === "Receipt No")?.StringValue || null,
-							};
-							DB.dbService.processInvoice(invoices);
-					});
-			});
-	});
+    let invoices = {};
+    let date = new Date();
+    date.setDate(date.getDate() - 5);
+    
+    return new Promise((resolve, reject) => {
+        qbo.findInvoices(
+            { fetchAll: true },
+            (err, response) => {
+                if (err) {
+                    console.error("Error fetching invoices:", err);
+                    return reject(err);
+                }
+                
+                response.QueryResponse.Invoice.forEach((i) => {
+                    invoices.TransactionID = parseInt(i.Id);
+                    invoices.QBTimeCreated = i.MetaData.CreateTime || null;
+                    invoices.QBTimeModified = i.MetaData.LastUpdatedTime || null;
+                    invoices.QBCustomerID = parseInt(i.CustomerRef?.value) || null;
+                    invoices.QBTransactionDate = i.TxnDate || null;
+                    invoices.QBDueDate = i.DueDate || null;
+                    invoices.InvoiceTerms = i.SalesTermRef?.Name || null;
+                    invoices.InvoiceTotal = i.TotalAmt || null;
+                    invoices.InvoiceBalance = i.Balance || null;
+                    invoices.Description = i.CustomerMemo?.Value || null;
+                    
+                    invoices.WorkOrder = i.CustomField?.find(field => field.Name === "Work Order")?.StringValue || null;
+                    invoices.ReceiptNo = i.CustomField?.find(field => field.Name === "Receipt No")?.StringValue || null;
+                    
+                    DB.dbService.processInvoice(invoices);
+                });
+            }
+        );
+    });
 }
 
 async function main() {
-	try {
-			await refreshAuthToken();
-			let customerStatus = await queryCustomers();
-			console.log(customerStatus ? "Successfully added to db" : "Error connecting to db");
-			console.log("Done");
-	} catch (error) {
-			console.error("Error:", error);
-	}
+    try {
+        await refreshAuthToken();
+        let customerStatus = await queryCustomers();
+        
+        if (customerStatus) {
+            console.log("Successfully added to db");
+        }
+        
+        console.log("Done");
+    } catch (error) {
+        console.error("Error:", error);
+    }
 }
 
+// setInterval(main, INTERVAL);
 main();
