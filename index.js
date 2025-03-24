@@ -72,7 +72,6 @@ function queryCustomers() {
                         billingState: c.BillAddr?.CountrySubDivisionCode || null,
                         billingZip: c.BillAddr?.PostalCode || null,
                     };
-                    
                     status = DB.dbService.processCustomer(customer);
                 });
             }
