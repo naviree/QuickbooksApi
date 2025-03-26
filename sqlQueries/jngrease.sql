@@ -1,6 +1,7 @@
 USE [DNNTEST2]
 SELECT * FROM [dbo].[JNGrease_QuickBooksSyncLog] ORDER BY LastUpdateDate DESC 
 SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2] 
+UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = NULL 
 SELECT * FROM [dbo].[JNGrease_QuickBooksInvoices_2] 
 SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2] 
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]

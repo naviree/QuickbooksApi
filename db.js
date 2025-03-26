@@ -31,17 +31,17 @@ dbService.processCustomer = async function (customer) {
 		const exists = await queries.checkCustomerExists(customer.customerId);
 
 		if (exists) {
-			return await queries.updateCustomer(customer);
+			await queries.updateCustomer(customer);
 		} else {
 			return await queries.createCustomer(customer);
 		}
-		// status returns = true;
+		status = true;
 	} catch (err) {
 		console.error("Error in processCustomer:", err);
 		throw err;
-		// returns = false;
+		status = false;
 	}
-	// returns status
+	return status;
 };
 
 dbService.processInvoice = async function (invoice) {
@@ -74,6 +74,10 @@ dbService.processPayment = async function (payment) {
 	}
 };
 
+// function here to call add to the DB.
+dbService.allDataAdded = async function dataAdded(data) {
+	
+}
 connectDB();
 
 module.exports = {

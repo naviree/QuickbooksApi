@@ -86,7 +86,6 @@ async function updateCustomer(customer) {
         request.input("shippingZip", sql.VarChar, customer.shippingZip);
 
         await request.query(updateQuery);
-        console.log(`Updated customer with ID: ${customer.customerId}`);
     } catch (err) {
         console.error("Error updating customer:", err);
         throw err;
@@ -183,7 +182,6 @@ async function updateInvoice(invoice) {
         request.input("receiptNo", sql.VarChar, invoice.ReceiptNo);
 
         await request.query(updateQuery);
-        console.log(`Updated invoice with ID: ${invoice.TransactionID}`);
     } catch (err) {
         console.error("Error updating invoice:", err);
         throw err;
@@ -265,7 +263,6 @@ async function updatePayment(payment) {
         request.input("paymentMemo", sql.VarChar, payment.PaymentMemo);
 
         await request.query(updateQuery);
-        console.log(`Updated payment with ID: ${payment.TransactionId}`);
     } catch (err) {
         console.error("Error updating payment:", err);
         throw err;
