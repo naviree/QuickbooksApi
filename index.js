@@ -33,73 +33,73 @@ function refreshAuthToken() {
 
 function queryCustomers() {
 	let date = new Date();
-	let status = false;
-	
-	// try {
-		date.setDate(date.getDate() - 5);
-		//  return new Promise((resolve, reject) => {
-			qbo.findCustomers(
-				{
-					// fetchAll: true,
-					
-					desc: "MetaData.LastUpdatedTime",
-					limit: 1
-				},
-				async function (e, response) {
-					if (e) {
-						console.error("Error fetching customers:", e);
-						reject(e);
-						return status;
-					 }
-					try {
-						let customersRes = response.QueryResponse.Customer;
+	date.setDate(date.getDate() - 5);
 
-						for (const c of customersRes) {
-							let customer = {
-								customerId: c.Id,
-								customerName: c.FullyQualifiedName || null,
-								firstName: c.GivenName || null,
-								lastName: c.FamilyName || null,
-								customerActive: c.Active || null,
-								balance: c.Balance || null,
-								telephone:
-									c.PrimaryPhone?.FreeFormNumber || null,
-								email: c.PrimaryEmailAddr?.Address || null,
-								webAddr: c.WebAddr?.URI || null,
-								shippingID: c.ShipAddr?.Id || null,
-								shippingAddress1: c.ShipAddr?.Line1 || null,
-								shippingAddress2: c.ShipAddr?.Line2 || null,
-								shippingCity: c.ShipAddr?.City || null,
-								shippingState:
-									c.ShipAddr?.CountrySubDivisionCode || null,
-								shippingZip: c.ShipAddr?.PostalCode || null,
-								billingID: c.BillAddr?.Id || null,
-								billingAddress1: c.BillAddr?.Line1 || null,
-								billingAddress2: c.BillAddr?.Line2 || null,
-								billingCity: c.BillAddr?.City || null,
-								billingState:
-									c.BillAddr?.CountrySubDivisionCode || null,
-								billingZip: c.BillAddr?.PostalCode || null,
-							};
-							status = await DB.dbService.processCustomer(customer);
-						}
-					
-						// resolve(status);
-					} catch (error) {
-						console.error(
-							"Error processing customers to DB:",);
-						// reject(dbError);
-					}
+	return new Promise((resolve, reject) => {
+		qbo.findCustomers(
+			{
+				desc: "MetaData.LastUpdatedTime",
+				limit: 1,
+			},
+			async function (e, response) {
+				if (e) {
+					console.error("Error fetching customers:", e);
+					reject(e);
+					return;
 				}
-			);
-			return status;
-		// });
-	// } catch (err) {
-	// 	console.error("Error in queryCustomers:", err);
-	// 	status = false;
-	// 	return Promise.reject(err);
-	// }
 
+				try {
+					let customersRes = response.QueryResponse.Customer;
+					let status = true;
+
+					for (const c of customersRes) {
+						let customer = {
+							customerId: c.Id,
+							customerName: c.FullyQualifiedName || null,
+							firstName: c.GivenName || null,
+							lastName: c.FamilyName || null,
+							customerActive: c.Active || null,
+							balance: c.Balance || null,
+							telephone: c.PrimaryPhone?.FreeFormNumber || null,
+							email: c.PrimaryEmailAddr?.Address || null,
+							webAddr: c.WebAddr?.URI || null,
+							shippingID: c.ShipAddr?.Id || null,
+							shippingAddress1: c.ShipAddr?.Line1 || null,
+							shippingAddress2: c.ShipAddr?.Line2 || null,
+							shippingCity: c.ShipAddr?.City || null,
+							shippingState:
+								c.ShipAddr?.CountrySubDivisionCode || null,
+							shippingZip: c.ShipAddr?.PostalCode || null,
+							billingID: c.BillAddr?.Id || null,
+							billingAddress1: c.BillAddr?.Line1 || null,
+							billingAddress2: c.BillAddr?.Line2 || null,
+							billingCity: c.BillAddr?.City || null,
+							billingState:
+								c.BillAddr?.CountrySubDivisionCode || null,
+							billingZip: c.BillAddr?.PostalCode || null,
+						};
+						try {
+							const result = await DB.dbService.processCustomer(
+								customer
+							);
+							// If any customer processing fails, set status to false
+							if (!result) status = false;
+						} catch (error) {
+							console.error(
+								"Error processing customer to DB:",
+								error
+							);
+							status = false;
+						}
+					}
+					resolve(status);
+				} catch (error) {
+					console.error("Error processing customers:", error);
+					reject(error);
+				}
+			}
+		);
+	});
 }
 
 function queryPayments() {
@@ -230,9 +230,19 @@ function queryInvoices() {
 async function main() {
 	try {
 		await refreshAuthToken();
+		console.log("Auth token refreshed");
+
+		console.log("Querying customers...");
 		const customerStatus = await queryCustomers();
+		console.log("Customer query status:", customerStatus);
+
+		console.log("Querying invoices...");
 		const invoiceStatus = await queryInvoices();
+		console.log("Invoice query status:", invoiceStatus);
+
+		console.log("Querying payments...");
 		const paymentStatus = await queryPayments();
+		console.log("Payment query status:", paymentStatus);
 
 		if (customerStatus && invoiceStatus && paymentStatus) {
 			console.log("Successfully processed all data to database");
