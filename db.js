@@ -75,24 +75,19 @@ dbService.processPayment = async function (payment) {
 };
 
 // function here to call add to the DB.
-dbService.allDataAdded = async function dataAdded() {
-	date = new Date().toString();
-	console.log(date);
+dbService.allDataAdded = async function dataAdded(date) {
 	try {
+
 		const insertQuery = `INSERT INTO dbo.JNGrease_QuickBooksSyncLog
 			(LastUpdateDate)
 			VALUES 
 			(@LastUpdateDate)`;
 
 		let request = new sql.Request();
-		request.input(
-			"LastUpdateDate",
-			sql.DateTime,
-			date
-		);
+		request.input("LastUpdateDate", sql.DateTime, date);
 
 		await request.query(insertQuery);
-		console.log("Successfully added sync log entry");
+		console.log("Successfully added sync log entry with date:", date);
 		return true;
 	} catch (err) {
 		console.error("Error adding sync log:", err);
