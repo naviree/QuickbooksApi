@@ -103,8 +103,6 @@ function queryCustomers() {
 }
 
 function queryPayments() {
-	let status = false;
-
 	try {
 		return new Promise((resolve, reject) => {
 			qbo.findPayments(
@@ -119,6 +117,7 @@ function queryPayments() {
 					}
 					try {
 						let paymentsRes = response.QueryResponse.Payment;
+						let status = true;
 
 						for (const p of paymentsRes) {
 							let payment = {
@@ -163,7 +162,6 @@ function queryPayments() {
 }
 
 function queryInvoices() {
-	let status = false;
 	let date = new Date();
 	date.setDate(date.getDate() - 5);
 
@@ -181,6 +179,7 @@ function queryInvoices() {
 					}
 					try {
 						let invoicesRes = response.QueryResponse.Invoice;
+						let status = true;
 
 						for (const i of invoicesRes) {
 							let invoice = {

@@ -4,6 +4,7 @@ SELECT * FROM [dbo].[JNGrease_QuickBooksCustomers_2]
 UPDATE [dbo].[JNGrease_QuickBooksCustomers_2] SET CustomerName = NULL 
 SELECT * FROM [dbo].[JNGrease_QuickBooksInvoices_2] 
 SELECT * FROM [dbo].[JNGrease_QuickBooksPayments_2] 
+
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 -- CREATE TABLE [dbo].[JNGrease_QuickBooksPayments_2]
 select C.CustomerName, I.*
@@ -37,6 +38,7 @@ CREATE TABLE JNGrease_QuickBooksCustomers_2
   QBTimeCreated DATETIME,
   QBTimeModified DATETIME 
 )
+
 
 ALTER TABLE JNGrease_QuickBooksCustomers_2 ADD QBTimeModified DATETIME
 
