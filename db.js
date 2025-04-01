@@ -81,13 +81,13 @@ dbService.allDataAdded = async function dataAdded(date) {
 		const insertQuery = `INSERT INTO dbo.JNGrease_QuickBooksSyncLog
 			(LastUpdateDate)
 			VALUES 
-			(@LastUpdateDate)`;
+			(GETDATE())`;
 
 		let request = new sql.Request();
-		request.input("LastUpdateDate", sql.DateTime, date);
+		// request.input("LastUpdateDate", sql.DateTime, date);
 
 		await request.query(insertQuery);
-		console.log("Successfully added sync log entry with date:", date);
+		console.log("Successfully added sync log entry with date:");
 		return true;
 	} catch (err) {
 		console.error("Error adding sync log:", err);
