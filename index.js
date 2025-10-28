@@ -227,7 +227,6 @@ function queryInvoices() {
 }
 
 async function main() {
-	const date = new Date();
 
 	try {
 		await refreshAuthToken();
@@ -247,7 +246,7 @@ async function main() {
 
 		if (customerStatus && invoiceStatus && paymentStatus) {
 			console.log("Successfully processed all data to database");
-			const succesfullyAdded = await DB.dbService.allDataAdded(date);
+			const succesfullyAdded = await DB.dbService.allDataAdded();
 			if (succesfullyAdded) {
 				console.log("Successfully added to DB");
 			} else {
